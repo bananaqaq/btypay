@@ -10,6 +10,14 @@ import {eventBus} from '@/libs/eventBus'
 import {getChromeStorage,setChromeStorage} from '@/libs/chromeUtil.js'
 export default {
   // components: {MyHeader},
+  methods: {
+    initDataFromChromeStorage(){
+      
+    },
+    initDataFromBackgroundRuntime(){
+
+    }
+  },
   mounted() {
     eventBus.$on('node-change', (val) => {
       this.$chain33Sdk.httpProvider.setUrl(val) 

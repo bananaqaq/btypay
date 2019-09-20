@@ -144,7 +144,7 @@ export default {
                             if (minAmt.greaterThan("300000000")) {
                                 continue
                             }
-                            if (amountPerBoardlot.greaterThan("300000000")) {
+                            if (amountPerBoardlot.lessThan("100000") || amountPerBoardlot.greaterThan("300000000")) {
                                 continue
                             }
                             if (leftAmt.greaterThan(maxAmt)) {
@@ -347,9 +347,10 @@ export default {
                             if (minAmt.greaterThan("300000000")) {
                                 continue
                             }
-                            if (amountPerBoardlot.greaterThan("300000000")) {
+                            if (pricePerBoardlot.lessThan("100000") || pricePerBoardlot.greaterThan("300000000")) {
                                 continue
                             }
+                            
                             if (leftAmt.greaterThan(maxAmt)) {
                                 maxAmt = leftAmt
                                 this.SELL_ID = order.txHash.replace(/^(0x|0X)/, '')

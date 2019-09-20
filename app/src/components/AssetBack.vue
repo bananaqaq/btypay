@@ -19,6 +19,7 @@ export default {
     },
     methods:{
         backHandle(){
+            console.log(this.backPath)
             this.$router.push(this.backPath)
             // if(this.title.indexOf('转账') > -1){
             //     // console.log(this.$store.state.Records.assetType)

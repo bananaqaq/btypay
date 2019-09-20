@@ -3,17 +3,25 @@ import Vue from 'vue'
 
 const state = {
   password: '',
-  seed: '',//助记词
+  seed: 'film finger voyage during alter chat sentence hundred connect riot doctor cash sing nut chat',//助记词
   accountMap: {},
   currentAccount: {
-    // address: "1EscufYUAkgCTTAFVqXmHMvRZMucTepvUM",   //1
-    // address: "15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J",   //2
-    address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",   //3
-    // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",   //4
-    base58PrivateKey: "",
-    // hexPrivateKey: "",   //1
-    // hexPrivateKey: "",   //2
-    hexPrivateKey: '', //3
+    // 1
+    // hexPrivateKey: "04339cbd3a9981b218dfb042b139714e40e2d72d9357c9e8c940a07ad51e3607",
+    // address: "1EscufYUAkgCTTAFVqXmHMvRZMucTepvUM",
+
+    // 2
+    // address: "15KHkN7db2dUF5oWcvwTSSxg2uFqTHJH8J",
+    // hexPrivateKey: "910010376d40528ef943df150f419f28d311e5d90751031f9951f1b6cfb5f8d3",
+
+    // 3
+    address: "1GUhbeySSNywQcGcsjhPPXMX7iRZ6P6ovb",
+    hexPrivateKey: '0x76b33cfa093226848e1e979c649778b4a24e040a97bb099007f73afb54b4c2fb',
+
+    // 4
+    // address: "1NN5DQHp5goSLLFe6BhfL8DKALoCNuR9PT",
+
+    base58PrivateKey: "xprvA3b4zNsRHPgvzSydbftV9acbtKhNui8P69E7B7UNmJCKfWJZ5biLtcnHC9gYWRdGufyhehMcFcaPYpCgNRYznSCBv1gxxGd3xUYAABibgxQ",
     index: 0,
     name: "创世地址"
   },
@@ -28,7 +36,7 @@ const state = {
   parallelAsset: {
     name: "GBT",
     amt: 0.0000,
-    price: 1
+    price: 10
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
@@ -36,10 +44,45 @@ const state = {
   currentMain: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
   parallelNode: [
-    { index: 0, name: 'gbttest', coin: "GBT", url: "http://114.55.11.139:1198", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
-    { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''},
+    { 
+      index: 0, 
+      name: 'gbttest', 
+      coin: "GBT", 
+      url: "http://172.16.103.24:8801", 
+      txHeight: -1, 
+      txIndex: 0, 
+      paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+      tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx"
+    },
+    { 
+      index: 1, 
+      name: 'game', 
+      coin: "GBTY", 
+      url: "http://47.98.245.85:8901", 
+      txHeight: -1, 
+      txIndex: 0 
+    },
   ],
-  currentParallel: { index: 0, name: 'gbttest', coin: "GBT", url: "http://114.55.11.139:1198", txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:'' },
+  currentParallel: { 
+    // index: 0, 
+    // name: 'gbttest', 
+    // coin: "GBT", 
+    // url: "http://172.16.103.24:8801", 
+    // txHeight: -1, 
+    // txIndex: 0, 
+    // paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+    // tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
+
+    
+    index: 1, 
+    name: 'game', 
+    coin: "GBTY", 
+    url: "http://47.98.245.85:8901", 
+    txHeight: -1, 
+    txIndex: 0,
+    paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+    tradeAddr: "18UPv6sbbzorMAhdHi3AfxRa1iM16rVpTb",
+  },
   // currentParallel: { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
 
 }

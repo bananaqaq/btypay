@@ -5,7 +5,7 @@
       @click="showBalance"
       style="position: absolute;left: 30px;top: 20px;z-index: 1000"
     >查余额</el-button>
-    <asset-back title="兑换"></asset-back>
+    <asset-back title="兑换" backPath="/coin?coin=game"></asset-back>
     <section class="ope">
       <div class="left">
         <img v-if="convert=='B2G'" src="../../../assets/images/btyLogo.png" alt />
@@ -125,7 +125,7 @@ export default {
 
       this.$chain33Sdk.getTokenBalance;
 
-      let paraName = "game";
+      let paraName = this.currentParallel.name;
 
       this.getAddrBalance(
         addr,
@@ -284,7 +284,6 @@ export default {
     requestTradeOrder() {
       this.getTradeBuyOrder(this.currentParallel.url).then(res => {
         setTimeout(() => {
-          console.log(res)
           this.tradeBuyLoading = false;
           if(res !== "success"){
             this.$message.error(JSON.parse(res).desc);
@@ -310,6 +309,7 @@ export default {
       this.asset = this.mainAsset;
     }, 0);
     this.requestTradeOrder();
+    console.log("xxx")
   }
 };
 </script>

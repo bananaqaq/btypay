@@ -76,7 +76,13 @@
       class="mainNode"
     >
       <p>请输入您要添加的主链节点地址，建议您使用默认的主链节点</p>
-      <input type="text" class="mainAddress" ref="mainName" v-model="mainData" @input.prevent="inputHandle($event,'main')"/>
+      <input
+        type="text"
+        class="mainAddress"
+        ref="mainName"
+        v-model="mainData"
+        @input.prevent="inputHandle($event,'main')"
+      />
       <p v-if="mainIsInput" class="main_error">请输入节点地址</p>
       <div slot="footer" class="dialog-footer">
         <el-button @click="mainDialog = false">取消</el-button>
@@ -92,7 +98,12 @@
     >
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-form-item label="平行链名称" prop="name">
-          <el-input v-model="form.name" ref="paraName" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
+          <el-input
+            v-model="form.name"
+            ref="paraName"
+            autocomplete="off"
+            @input="inputHandle($event,'para')"
+          ></el-input>
         </el-form-item>
         <el-form-item label="代币名称" prop="coin">
           <el-input v-model="form.coin" autocomplete="off" @input="inputHandle($event,'para')"></el-input>
@@ -119,7 +130,7 @@ import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil";
 const { mapState } = createNamespacedHelpers("Account");
 
 export default {
-  mixins: [walletAPI,recover],
+  mixins: [walletAPI, recover],
   components: { HomeHeader },
   computed: {
     ...mapState([
@@ -160,20 +171,41 @@ export default {
     };
   },
   methods: {
-    inputHandle(e,node){
+
+    setNode1(node, target){
+
+    },
+    delNode1(node, target){
+
+    },
+    testNodeConnection(node){
+      
+    },
+    addMainNode(){
+
+    },
+    addParaNode(){
+
+    },
+
+
+
+
+
+    inputHandle(e, node) {
       // console.log(e)
       // console.log(node)
-      if(node == 'main'){
-        this.getAndSet('mainData',e.target.value)
-      }else if(node == 'para'){
-        this.getAndSet('form',this.form)
+      if (node == "main") {
+        this.getAndSet("mainData", e.target.value);
+      } else if (node == "para") {
+        this.getAndSet("form", this.form);
       }
     },
-    test(){
-      this.mainDialog=true;
-      this.mainIsInput=false;
-      this.mainData=''
-      this.getAndSet('mainDialog',true)
+    test() {
+      this.mainDialog = true;
+      this.mainIsInput = false;
+      this.mainData = "";
+      this.getAndSet("mainDialog", true);
     },
     paraSubmit(formName) {
       for (let i = 0; i < this.paraNodeList.length; i++) {
@@ -185,8 +217,8 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log("submit!");
-          let length = this.paraNodeList.length
-          let index = this.paraNodeList[length-1].index+1;
+          let length = this.paraNodeList.length;
+          let index = this.paraNodeList[length - 1].index + 1;
           // console.log(index);
           let paraAddr = "";
           let tradeAddr = "";
@@ -249,8 +281,8 @@ export default {
           return;
         }
       }
-      let length = this.mainNodeList.length
-      let index = this.mainNodeList[length-1].index+1;
+      let length = this.mainNodeList.length;
+      let index = this.mainNodeList[length - 1].index + 1;
       let obj = {
         url: this.mainData,
         txHeight: -1,
@@ -310,37 +342,37 @@ export default {
           });
       }
     },
-    delNode(val,target){
-      console.log(val)
-      console.log(target)
-      if (target == "main"){
-        for(let i = 0; i < this.mainNodeList.length; i++){
-          if(val.url == this.mainNodeList[i].url){
-            this.mainNodeList.splice(i,1);
-            break
+    delNode(val, target) {
+      console.log(val);
+      console.log(target);
+      if (target == "main") {
+        for (let i = 0; i < this.mainNodeList.length; i++) {
+          if (val.url == this.mainNodeList[i].url) {
+            this.mainNodeList.splice(i, 1);
+            break;
           }
         }
-        setChromeStorage("mainNodeList", this.mainNodeList).then(res=>{
+        setChromeStorage("mainNodeList", this.mainNodeList).then(res => {
           if (res == "success") {
             // this.mainNodeList = this.mainNode;
             this.$message.success("主链节点删除成功");
             this.getMainNode(); //更新视图
           }
-        })
-      }else if (target == "para"){
-        for(let i = 0; i < this.paraNodeList.length; i++){
-          if(val.url == this.paraNodeList[i].url){
-            this.paraNodeList.splice(i,1);
-            break
+        });
+      } else if (target == "para") {
+        for (let i = 0; i < this.paraNodeList.length; i++) {
+          if (val.url == this.paraNodeList[i].url) {
+            this.paraNodeList.splice(i, 1);
+            break;
           }
         }
-        setChromeStorage("parallelNodeList", this.paraNodeList).then(res=>{
+        setChromeStorage("parallelNodeList", this.paraNodeList).then(res => {
           if (res == "success") {
             // this.mainNodeList = this.mainNode;
             this.$message.success("平行链节点删除成功");
             this.getParaNode(); //更新视图
           }
-        })
+        });
       }
     },
     getMainNode() {
@@ -363,7 +395,10 @@ export default {
         // console.log(res)
         if (res.parallelNodeList) {
           this.paraNodeList = res.parallelNodeList;
-          this.$store.commit("Account/UPDATE_PARALLEL_NODE", res.parallelNodeList);
+          this.$store.commit(
+            "Account/UPDATE_PARALLEL_NODE",
+            res.parallelNodeList
+          );
         }
       });
       getChromeStorage("paraNode").then(res => {
@@ -390,7 +425,7 @@ export default {
   },
   watch: {
     paraDialog(val) {
-      this.getAndSet('paraDialog',val)
+      this.getAndSet("paraDialog", val);
       if (!val) {
         this.$refs["ruleForm"].resetFields();
       } else {
@@ -400,14 +435,14 @@ export default {
       }
     },
     mainDialog(val) {
-      this.getAndSet('mainDialog',val)
+      this.getAndSet("mainDialog", val);
       if (val) {
         setTimeout(() => {
           this.$refs["mainName"] && this.$refs["mainName"].focus();
         }, 50);
       }
     }
-  },
+  }
 };
 </script>
 
