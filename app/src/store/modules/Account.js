@@ -1,4 +1,4 @@
-import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
+import { getChromeStorage, setChromeStorage, setChromeStorageKVS } from "@/libs/chromeUtil"
 import Vue from 'vue'
 
 const state = {
@@ -28,7 +28,6 @@ const state = {
   mainIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
   parallelIsConnected: 1,//1:连接中；2:连接成功；3:连接失败
 
-
   mainAsset: {
     amt: 0.0000,
     price: 10
@@ -40,30 +39,30 @@ const state = {
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
-  mainNode: [{ index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
-  currentMain: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
+  mainNodeList: [{ index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
+  mainNode: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
-  parallelNode: [
-    { 
-      index: 0, 
-      name: 'gbttest', 
-      coin: "GBT", 
-      url: "http://172.16.103.24:8801", 
-      txHeight: -1, 
-      txIndex: 0, 
-      paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+  paraNodeList: [
+    {
+      index: 0,
+      name: 'gbttest',
+      coin: "GBT",
+      url: "http://172.16.103.24:8801",
+      txHeight: -1,
+      txIndex: 0,
+      paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",
       tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx"
     },
-    { 
-      index: 1, 
-      name: 'game', 
-      coin: "GBTY", 
-      url: "http://47.98.245.85:8901", 
-      txHeight: -1, 
-      txIndex: 0 
+    {
+      index: 1,
+      name: 'game',
+      coin: "GBTY",
+      url: "http://47.98.245.85:8901",
+      txHeight: -1,
+      txIndex: 0
     },
   ],
-  currentParallel: { 
+  paraNode: {
     // index: 0, 
     // name: 'gbttest', 
     // coin: "GBT", 
@@ -73,17 +72,26 @@ const state = {
     // paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
     // tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
 
-    
-    index: 1, 
-    name: 'game', 
-    coin: "GBTY", 
-    url: "http://47.98.245.85:8901", 
-    txHeight: -1, 
+
+    // index: 1, 
+    // name: 'game', 
+    // coin: "GBTY", 
+    // url: "http://47.98.245.85:8901", 
+    // txHeight: -1, 
+    // txIndex: 0,
+    // paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+    // tradeAddr: "18UPv6sbbzorMAhdHi3AfxRa1iM16rVpTb",
+
+
+    index: 0,
+    name: 'marsfood',
+    coin: "bty",
+    url: "http://47.96.190.51:8801",
+    txHeight: -1,
     txIndex: 0,
-    paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
-    tradeAddr: "18UPv6sbbzorMAhdHi3AfxRa1iM16rVpTb",
+    paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",
+    tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
   },
-  // currentParallel: { index: 1, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 },
 
 }
 
@@ -107,72 +115,6 @@ const mutations = {
     state.currentAccount = currentAccount
   },
 
-  UPDATE_MAIN_NODE(state, payload) {
-    // state.mainNode.push(payload);
-    state.mainNode = payload;
-    // let backup = JSON.parse(JSON.stringify(state.mainNode))
-    // backup.push(payload)
-    // setChromeStorage("mainNodeList", backup).then(res => {
-    //   if(res = "success"){
-    //     state.mainNode = backup
-    //   }
-    // })
-  },
-  UPDATE_CURRENT_MAIN(state, { index, url, txHeight, txIndex, name }) {
-    let backup = JSON.parse(JSON.stringify(state.mainNode))
-    let i = state.currentMain.index
-    if (i !== -1) {
-      index && (backup[i].index = index)
-      url && (backup[i].url = url)
-      txHeight && (backup[i].txHeight = txHeight)
-      txIndex && (backup[i].txIndex = txIndex)
-      name && (backup[i].name = name)
-      // setChromeStorage("mainNodeList", backup).then(res => {
-      //   if (res == "success") {
-          state.mainNode = backup
-          state.currentMain = backup[i]
-          
-      //   }
-      // })
-    }
-    // index && (state.mainNode[i].index = index)
-    // url && (state.mainNode[i].url = url)
-    // txHeight && (state.mainNode[i].txHeight = txHeight)
-    // txIndex && (state.mainNode[i].txIndex = txIndex)
-    // coin && (state.mainNode[i].coin = coin)
-
-    // state.currentMain = {...{ index, url, txHeight, txIndex, name }}
-  },
-  UPDATE_PARALLEL_NODE(state, payload) {
-    // state.parallelNode.push(payload);
-    state.parallelNode = payload;
-    // let backup = JSON.parse(JSON.stringify(state.parallelNode))
-    // backup.push(payload)
-    // setChromeStorage("parallelNodeList", backup).then(res => {
-    //   if (res == "success") {
-    //   state.parallelNode = backup
-    //   }
-    // })
-  },
-  UPDATE_CURRENT_PARALLEL(state, { index, url, txHeight, txIndex, coin,name,paraAddr,tradeAddr }) {
-    let backup = JSON.parse(JSON.stringify(state.parallelNode))
-    let i = state.currentParallel.index
-    index && (backup[i].index = index)
-    url && (backup[i].url = url)
-    txHeight && (backup[i].txHeight = txHeight)
-    txIndex && (backup[i].txIndex = txIndex)
-    coin && (backup[i].coin = coin)
-    name && (backup[i].name = name)
-    paraAddr && (backup[i].paraAddr = paraAddr)
-    tradeAddr && (backup[i].tradeAddr = tradeAddr)
-    // setChromeStorage("parallelNodeList", backup).then(res => {
-    // if (res == "success") {
-      state.parallelNode = backup
-      state.currentParallel = backup[i]
-    // }
-    // })
-    // state.parallelNode = {...{ index, url, txHeight, txIndex, coin,name,paraAddr,tradeAddr }}
-  },
 
   UPDATE_MAIN_ASSET(state, { amt, price }) {
     if (amt || amt == 0) {
@@ -195,10 +137,87 @@ const mutations = {
   },
 
 
+  // NODE --START
+  UPDATE_MAIN_NODE_LIST(state, payload){
+    state.mainNodeList = payload
+  },
+  UPDATE_MAIN_NODE(state, payload){
+    state.mainNode = payload
+  },
+  UPDATE_PARA_NODE_LIST(state, payload){
+    state.paraNodeList = payload
+  },
+  UPDATE_PARA_NODE(state, payload){
+    state.paraNode = payload
+  },
+  // NODE --END
+
+
+
+
+}
+
+const actions = {
+  FIRST_INIT_MAIN_NODE({state}){
+    state.mainNode = state.mainNodeList[0]
+    state.mainNode.index = 0
+    let kvs = {
+      mainNode: state.mainNode,
+      mainNodeList: state.mainNodeList
+    }
+    setChromeStorageKVS(kvs)
+  },
+  UPDATE_AND_SAVE_MAIN_NODE({state}, {txHeight, txIndex}){
+    txHeight && (state.mainNode.txHeight = txHeight)
+    txIndex && (state.mainNode.txIndex = txIndex)
+    return setChromeStorage("mainNode", state.mainNode)
+  },
+  ADD_MAIN_NODE({state}, url){
+    let newNode = {
+      url: url,
+      txHeight: -1,
+      txIndex: 0,
+      name: "BTY"
+    }
+    state.mainNodeList.push(newNode)
+    return setChromeStorage("mainNodeList", state.mainNodeList)
+  },
+  DEL_MAIN_NODE({state}, index){
+    state.mainNodeList = state.mainNodeList.splice(index, 1)
+    return setChromeStorage("mainNodeList", state.mainNodeList)
+  }, 
+  CHANGE_MAIN_NODE({state}, index){
+    state.mainNode = state.mainNodeList[index]
+    let kvs = {
+      mainNode: state.mainNode,
+      mainNodeList: state.mainNodeList
+    }
+    return setChromeStorageKVS(kvs)
+  },
+
+
+
+  FIRST_INIT_PARA_NODE(){
+
+  },
+  UPDATE_AND_SAVE_PARA_NODE(){
+
+  },
+  ADD_PARA_NODE(){
+
+  },
+  DEL_PARA_NODE(){
+
+  },
+  CHANGE_PARA_NODE(){
+
+  }
+
 }
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
+  actions
 }

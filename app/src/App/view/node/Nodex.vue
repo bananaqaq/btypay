@@ -13,23 +13,23 @@
         <p>主链节点设置</p>
         <div class="main">
           <section class="up">
-            <div v-for="(item,i) in mainNode" :key="i" @click="setNode(item,'main')">
+            <div v-for="(item,i) in mainNodeList" :key="i" @click="setNode(item,'main')">
               <p class="address">{{item.url}}</p>
               <img
-                v-if="i === mainNode.index"
+                v-if="item.url==currentMainNode.url"
                 src="../../../assets/images/selected.png"
                 alt
               />
               <img
                 @click.stop="delNode(item,'main')"
-                v-else
+                v-if="item.url!=currentMainNode.url&&i>0"
                 src="../../../assets/images/deleteNode.png"
                 style="width:17px;height:19px"
                 alt
               />
               <span
                 :style="mainIsConnected==3?'color:#EF394A':mainIsConnected==1?'color:#f4c36a':''"
-                v-if="i === mainNode.index"
+                v-if="item.url==currentMainNode.url"
               >{{mainIsConnected==1?'连接中':mainIsConnected==2?'连接成功':mainIsConnected==3?'连接失败':''}}</span>
               <p class="line"></p>
             </div>
@@ -135,8 +135,8 @@ export default {
     ...mapState([
       "accountMap",
       "currentAccount",
-      "mainNode",
-      "paraNode",
+      "currentMain",
+      "currentParallel",
       "mainAsset",
       "parallelAsset",
       "mainNode",
@@ -223,11 +223,11 @@ export default {
           let tradeAddr = "";
           const p1 = this.convertExecToAddr(
             "paracross",
-            this.paraNode.url
+            this.currentParallel.url
           );
           const p2 = this.convertExecToAddr(
             "user.p." + this.form.name + ".trade",
-            this.paraNode.url
+            this.currentParallel.url
           );
           Promise.all([p1, p2])
             .then(([paraAddr, tradeAddr]) => {

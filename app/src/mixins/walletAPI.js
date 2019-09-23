@@ -40,8 +40,8 @@ export default {
   computed: {
     ...mapState([
       "currentAccount",
-      "currentMain",
-      "currentParallel",
+      "mainNode",
+      "paraNode",
     ])
   },
   methods: {
@@ -181,7 +181,7 @@ export default {
     refreshMainAsset() {
       // console.log(this.currentAccount)
       let addr = this.currentAccount.address
-      let url = this.currentMain.url
+      let url = this.mainNode.url
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
@@ -202,7 +202,7 @@ export default {
 
     refreshParallelAsset() {
       let addr = this.currentAccount.address
-      let url = this.currentParallel.url
+      let url = this.paraNode.url
       return new Promise((resolve, reject) => {
         this.getAddrBalance(addr, 'coins', url).then(res => {
           let payload = { amt: res[0].balance / 1e8 }
@@ -226,7 +226,7 @@ export default {
     /* 交易记录相关 --start */
 
     initTxList(coin, callback) {
-      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let cNode = coin === "bty" ? this.mainNode : this.paraNode
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.name
       let count = 100
@@ -262,7 +262,7 @@ export default {
       })
     },
     getTxList(coin, typeTy, advanceNum, refresh, callback) {
-      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let cNode = coin === "bty" ? this.mainNode : this.paraNode
       let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
       let symbol = cNode.name
       let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
@@ -296,7 +296,7 @@ export default {
     },
 
     filterAndSaveTx(coin, updateMethod, tx) {
-      let cNode = coin === "bty" ? this.currentMain : this.currentParallel
+      let cNode = coin === "bty" ? this.mainNode : this.paraNode
       let symbol = cNode.name
       let lastTx = null
       let createNewTx = false

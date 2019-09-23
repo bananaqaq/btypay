@@ -76,8 +76,8 @@ export default {
     ...mapState([
       //   "accountMap",
       "currentAccount",
-      "currentMain",
-      "currentParallel",
+      "mainNode",
+      "paraNode",
       "mainAsset",
       "parallelAsset"
       //   "mainNode",
@@ -111,8 +111,8 @@ export default {
   methods: {
     showBalance() {
       let addr = this.currentAccount.address;
-      let mainUrl = this.currentMain.url;
-      let paraUrl = this.currentParallel.url;
+      let mainUrl = this.mainNode.url;
+      let paraUrl = this.paraNode.url;
 
       console.log("=====================================================");
       this.getAddrBalance(addr, "coins", mainUrl).then(res => {
@@ -125,7 +125,7 @@ export default {
 
       this.$chain33Sdk.getTokenBalance;
 
-      let paraName = this.currentParallel.name;
+      let paraName = this.paraNode.name;
 
       this.getAddrBalance(
         addr,
@@ -282,7 +282,7 @@ export default {
     },
 
     requestTradeOrder() {
-      this.getTradeBuyOrder(this.currentParallel.url).then(res => {
+      this.getTradeBuyOrder(this.paraNode.url).then(res => {
         setTimeout(() => {
           this.tradeBuyLoading = false;
           if(res !== "success"){
@@ -291,7 +291,7 @@ export default {
         }, 600);
         console.log("BUY_ID:" + this.BUY_ID);
       });
-      this.getTradeSellOrder(this.currentParallel.url).then(res => {
+      this.getTradeSellOrder(this.paraNode.url).then(res => {
         setTimeout(() => {
           this.tradeSellLoading = false;
           if(res !== "success"){

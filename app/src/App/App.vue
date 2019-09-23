@@ -7,13 +7,42 @@
 <script>
 // import MyHeader from './Header'
 import {eventBus} from '@/libs/eventBus'
-import {getChromeStorage,setChromeStorage} from '@/libs/chromeUtil.js'
+import {getChromeStorage, setChromeStorage, clearChromeStorage} from '@/libs/chromeUtil.js'
 export default {
   // components: {MyHeader},
   methods: {
     initDataFromChromeStorage(){
       
-    },
+      let keys = ['mainNodeList', 'paraNodeList', 'mainNode', 'paraNode']
+      getChromeStorage(keys).then(data => {
+        let mList = data.mainNodeList
+        let pList = data.paraNodeList
+        let mNode = data.mainNode
+        let pNode = data.paraNode
+
+        if(mList && mList.length !== 0){
+
+        } else {
+          this.$store.commit("Account/INIT_MAIN_NODE", mList)
+        }
+
+        if(pList && pList.length !== 0){
+          
+        } else {
+
+        }
+
+        if(mNode){
+
+        }
+
+        if(pNode){
+
+        }
+
+      })
+
+    }, 
     initDataFromBackgroundRuntime(){
 
     }
@@ -23,39 +52,43 @@ export default {
       this.$chain33Sdk.httpProvider.setUrl(val) 
       // eventBus.$emit('provider-changed')
     })
-    getChromeStorage('mainNodeList').then(res=>{
-      if(res.mainNodeList && res.mainNodeList.length > 0){
-        // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-        // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-      }else{
-        chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-        // console.log(this.$store.state.Account.mainNode)
-      }
-    })
-    getChromeStorage('parallelNodeList').then(res=>{
-      if(res.parallelNodeList && res.parallelNodeList.length > 0){
-        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-      }else{
-        chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-        // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
-      }
-    })
-    getChromeStorage('mainNode').then(res=>{
-      if(res.mainNode){
-        this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-      }else{
-        chrome.storage.local.set({ 'mainNode': {url: 'http://47.107.15.126:8801',name: 'user.p.gbttest.',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
-      }
-    })
-    getChromeStorage('paraNode').then(res=>{
-      if(res.paraNode){
-        this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
-        // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
-      }else{
+    // clearChromeStorage()
 
-        chrome.storage.local.set({ 'paraNode': {url: 'http://114.55.11.139:1198',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
-      }
-    })
+    this.initDataFromChromeStorage()
+
+    // getChromeStorage('mainNodeList').then(res=>{
+    //   if(res.mainNodeList && res.mainNodeList.length > 0){
+    //     // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
+    //     // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+    //   }else{
+    //     chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
+    //     // console.log(this.$store.state.Account.mainNode)
+    //   }
+    // })
+    // getChromeStorage('parallelNodeList').then(res=>{
+    //   if(res.parallelNodeList && res.parallelNodeList.length > 0){
+    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+    //   }else{
+    //     chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
+    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
+    //   }
+    // })
+    // getChromeStorage('mainNode').then(res=>{
+    //   if(res.mainNode){
+    //     this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
+    //   }else{
+    //     chrome.storage.local.set({ 'mainNode': {url: 'http://47.107.15.126:8801',name: 'user.p.gbttest.',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
+    //   }
+    // })
+    // getChromeStorage('paraNode').then(res=>{
+    //   if(res.paraNode){
+    //     this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
+    //     // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
+    //   }else{
+
+    //     chrome.storage.local.set({ 'paraNode': {url: 'http://114.55.11.139:1198',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
+    //   }
+    // })
   }
 }
 </script>

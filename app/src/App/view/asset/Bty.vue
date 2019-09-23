@@ -113,8 +113,8 @@ export default {
     ...mapState([
       "accountMap",
       "currentAccount",
-      "currentMain",
-      "currentParallel",
+      "mainNode",
+      "paraNode",
       "mainAsset",
       "parallelAsset"
     ]),
@@ -221,8 +221,8 @@ export default {
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url =
-      this.coin == "bty" ? this.currentMain.url : this.currentParallel.url;
-    this.$chain33Sdk.httpProvider.setUrl(this.currentMain.url);
+      this.coin == "bty" ? this.mainNode.url : this.paraNode.url;
+    this.$chain33Sdk.httpProvider.setUrl(this.mainNode.url);
 
 
     this.getNTxFirstTime(this.currentTypeTy, 5);

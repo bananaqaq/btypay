@@ -22,7 +22,7 @@
         <li @click="toGame" ref="game">
           <div class="left">
             <img src="../../../assets/images/gameLogo.png" alt />
-            <p>{{ currentParallel.coin }}</p>
+            <p>{{ paraNode.coin }}</p>
           </div>
           <div class="right">
             <p v-if="numIsAnimation" id="game">0.0000</p>
@@ -66,8 +66,8 @@ export default {
     ...mapState([
       "accountMap",
       "currentAccount",
-      "currentMain",
-      "currentParallel",
+      "mainNode",
+      "paraNode",
       "mainAsset",
       "parallelAsset"
     ])
@@ -78,9 +78,9 @@ export default {
       setChromeStorage('currentPageCoin','bty').then(res=>{
 
       })
-      // if(this.currentMain && this.currentMain.url){
-      //   console.log(this.currentMain)
-      //   eventBus.$emit('node-change', this.currentMain.url)
+      // if(this.mainNode && this.mainNode.url){
+      //   console.log(this.mainNode)
+      //   eventBus.$emit('node-change', this.mainNode.url)
       // }
       this.$router.push({ path: "/coin?coin=bty" });
     },
@@ -89,9 +89,9 @@ export default {
       setChromeStorage('currentPageCoin','game').then(res=>{
         
       })
-      // if(this.currentParallel && this.currentParallel.url){
-      //   console.log(this.currentParallel)
-      //   eventBus.$emit('node-change', this.currentParallel.url)
+      // if(this.paraNode && this.paraNode.url){
+      //   console.log(this.paraNode)
+      //   eventBus.$emit('node-change', this.paraNode.url)
       // }
       this.$router.push({ path: "/coin?coin=game" });
     },

@@ -1,6 +1,6 @@
 <template>
   <div class="transfer_container">
-    <asset-back :title="coin=='bty'?'BTY转账':currentParallel.coin+'转账'" :backPath='"/coin?coin="+coin'></asset-back>
+    <asset-back :title="coin=='bty'?'BTY转账':paraNode.coin+'转账'" :backPath='"/coin?coin="+coin'></asset-back>
     <el-form
       :model="form"
       :rules="rules"
@@ -10,12 +10,12 @@
       <el-form-item label="转账金额" prop="num">
         <el-input type='number' v-model="form.num" placeholder='请输入金额' auto-complete="on" @input="inputHandle"></el-input>
         <p v-if="coin=='bty'" class="balance">余额{{mainAsset.amt| numFilter(2)}}BTY</p>
-        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{currentParallel.coin}}</p>
+        <p v-if="coin=='game'" class="balance">余额{{parallelAsset.amt| numFilter(2)}}{{paraNode.coin}}</p>
         <p v-if="coin=='bty'" class="mentionAll" @click="form.num=mainAsset.amt">全部提取</p>
         <p v-if="coin=='game'" class="mentionAll" @click="form.num=parallelAsset.amt">全部提取</p>
       </el-form-item>
       <el-form-item label="收款地址" prop="address">
-        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+currentParallel.coin+"地址"' auto-complete="off" @input="inputHandle"></el-input>
+        <el-input v-model="form.address" :placeholder='coin=="bty"?"请输入BTY地址":"请输入"+paraNode.coin+"地址"' auto-complete="off" @input="inputHandle"></el-input>
         <!-- <img src="../../../assets/images/scan.png" alt="" class="scan">
         <p class="line"></p> -->
         <img src="../../../assets/images/add.png" alt="" @click="$router.push({name:'address'})" class="add">
@@ -100,7 +100,7 @@ export default {
       this.isCreating = true;
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let url = this.coin=='bty'?this.currentMain.url:this.coin=='game'?this.currentParallel.url:'';
+          let url = this.coin=='bty'?this.currentNode.url:this.coin=='game'?this.paraNode.url:'';
           // console.log("submit!!"+url);
           this.sendToAddr({
             privateKey: this.currentAccount.hexPrivateKey,
@@ -145,7 +145,7 @@ export default {
     // }
   }, 
   computed:{
-    ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset",'currentMain','currentParallel']),
+    ...mapState(['accountMap', 'currentAccount',"mainAsset", "parallelAsset",'currentNode','paraNode']),
   },
   mounted(){
     if(this.$route.query.coin){
