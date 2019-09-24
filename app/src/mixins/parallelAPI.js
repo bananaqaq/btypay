@@ -217,6 +217,9 @@ export default {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                 return
             }
+            if( !this.BUY_ID || this.BUY_ID === ''){
+                callback(JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER))
+            }
             // 跨链兑换
             this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
                 this.txStateCheckTask(hash1, mainUrl, err1 => {
@@ -409,6 +412,10 @@ export default {
             }
             if (amt <= 0) {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+                return
+            }
+            if ( !this.SELL_ID || this.SELL_ID == '' ){
+                callback(JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER))
                 return
             }
             // 跨链兑换

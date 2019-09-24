@@ -39,12 +39,11 @@ const state = {
   },
 
   // 1xzVbLNynwDNLjPNF8zvXfbygQvFcZG4a
-  mainNodeList: [{ index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
+  mainNodeList: [{ url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" }],
   mainNode: { index: 0, url: 'http://47.107.15.126:8801', txHeight: -1, txIndex: 0, name: "BTY" },
 
   paraNodeList: [
     {
-      index: 0,
       name: 'gbttest',
       coin: "GBT",
       url: "http://172.16.103.24:8801",
@@ -54,7 +53,6 @@ const state = {
       tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx"
     },
     {
-      index: 1,
       name: 'game',
       coin: "GBTY",
       url: "http://47.98.245.85:8901",
@@ -63,14 +61,14 @@ const state = {
     },
   ],
   paraNode: {
-    // index: 0, 
-    // name: 'gbttest', 
-    // coin: "GBT", 
-    // url: "http://172.16.103.24:8801", 
-    // txHeight: -1, 
-    // txIndex: 0, 
-    // paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
-    // tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
+    index: 0, 
+    name: 'gbttest', 
+    coin: "GBT", 
+    url: "http://172.16.103.24:8801", 
+    txHeight: -1, 
+    txIndex: 0, 
+    paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe", 
+    tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
 
 
     // index: 1, 
@@ -83,14 +81,14 @@ const state = {
     // tradeAddr: "18UPv6sbbzorMAhdHi3AfxRa1iM16rVpTb",
 
 
-    index: 0,
-    name: 'marsfood',
-    coin: "bty",
-    url: "http://47.96.190.51:8801",
-    txHeight: -1,
-    txIndex: 0,
-    paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",
-    tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
+    // index: 0,
+    // name: 'marsfood',
+    // coin: "bty",
+    // url: "http://47.96.190.51:8801",
+    // txHeight: -1,
+    // txIndex: 0,
+    // paraAddr: "1HPkPopVe3ERfvaAgedDtJQ792taZFEHCe",
+    // tradeAddr: "154SjGaRuyuWKaAsprLkxmx69r1oubAhDx",
   },
 
 }
@@ -136,18 +134,17 @@ const mutations = {
     }
   },
 
-
   // NODE --START
-  UPDATE_MAIN_NODE_LIST(state, payload){
+  UPDATE_MAIN_NODE_LIST(state, payload) {
     state.mainNodeList = payload
   },
-  UPDATE_MAIN_NODE(state, payload){
+  UPDATE_MAIN_NODE(state, payload) {
     state.mainNode = payload
   },
-  UPDATE_PARA_NODE_LIST(state, payload){
+  UPDATE_PARA_NODE_LIST(state, payload) {
     state.paraNodeList = payload
   },
-  UPDATE_PARA_NODE(state, payload){
+  UPDATE_PARA_NODE(state, payload) {
     state.paraNode = payload
   },
   // NODE --END
@@ -158,21 +155,30 @@ const mutations = {
 }
 
 const actions = {
-  FIRST_INIT_MAIN_NODE({state}){
-    state.mainNode = state.mainNodeList[0]
+  FIRST_INIT_MAIN_NODE({ state }) {
+    state.mainNode = state.mainNodeList.slice(0, 1)
     state.mainNode.index = 0
     let kvs = {
       mainNode: state.mainNode,
       mainNodeList: state.mainNodeList
     }
-    setChromeStorageKVS(kvs)
+    return setChromeStorageKVS(kvs)
   },
-  UPDATE_AND_SAVE_MAIN_NODE({state}, {txHeight, txIndex}){
-    txHeight && (state.mainNode.txHeight = txHeight)
-    txIndex && (state.mainNode.txIndex = txIndex)
-    return setChromeStorage("mainNode", state.mainNode)
+  UPDATE_AND_SAVE_MAIN_NODE({ state }, { index, txHeight, txIndex }) {
+    (txHeight || txHeight == 0) && (state.mainNodeList[index].txHeight = txHeight)
+      (txIndex || txIndex == 0) && (state.mainNodeList[index].txIndex = txIndex)
+    if (index === state.mainNode.index) {
+      state.mainNode = state.mainNodeList.slice(index, 1)
+      state.mainNode.index = index
+    }
+
+    let kvs = {
+      mainNode: state.mainNode,
+      mainNodeList: state.mainNodeList
+    }
+    return setChromeStorageKVS(kvs)
   },
-  ADD_MAIN_NODE({state}, url){
+  ADD_MAIN_NODE({ state }, url) {
     let newNode = {
       url: url,
       txHeight: -1,
@@ -182,12 +188,13 @@ const actions = {
     state.mainNodeList.push(newNode)
     return setChromeStorage("mainNodeList", state.mainNodeList)
   },
-  DEL_MAIN_NODE({state}, index){
+  DEL_MAIN_NODE({ state }, index) {
     state.mainNodeList = state.mainNodeList.splice(index, 1)
     return setChromeStorage("mainNodeList", state.mainNodeList)
-  }, 
-  CHANGE_MAIN_NODE({state}, index){
-    state.mainNode = state.mainNodeList[index]
+  },
+  CHANGE_MAIN_NODE({ state }, index) {
+    state.mainNode = state.mainNodeList.slice(index, 1)
+    state.mainNode.index = index
     let kvs = {
       mainNode: state.mainNode,
       mainNodeList: state.mainNodeList
@@ -197,19 +204,38 @@ const actions = {
 
 
 
-  FIRST_INIT_PARA_NODE(){
+  FIRST_INIT_PARA_NODE({ state }) {
+    state.paraNode = state.paraNodeList.slice(0, 1)
+    state.paraNode.index = 0
+    let kvs = {
+      paraNode: state.paraNode,
+      paraNodeList: state.paraNodeList
+    }
+    return setChromeStorageKVS(kvs)
+  },
+  UPDATE_AND_SAVE_PARA_NODE({ state }, { index, txHeight, txIndex, paraAddr, tradeAddr }) {
+    (txHeight || txHeight == 0) && (state.paraNodeList[index].txHeight = txHeight)
+      (txIndex || txIndex == 0) && (state.paraNodeList[index].txIndex = txIndex)
+    paraAddr && (state.paraNodeList[index].paraAddr = paraAddr)
+    tradeAddr && (state.paraNodeList[index].tradeAddr = tradeAddr)
+    if (index === state.paraNode.index) {
+      state.paraNode = state.paraNodeList.slice(index, 1)
+      state.paraNode.index = index
+    }
+
+    let kvs = {
+      paraNode: state.paraNode,
+      paraNodeList: state.paraNodeList
+    }
+    return setChromeStorageKVS(kvs)
+  },
+  ADD_PARA_NODE() {
 
   },
-  UPDATE_AND_SAVE_PARA_NODE(){
+  DEL_PARA_NODE() {
 
   },
-  ADD_PARA_NODE(){
-
-  },
-  DEL_PARA_NODE(){
-
-  },
-  CHANGE_PARA_NODE(){
+  CHANGE_PARA_NODE() {
 
   }
 

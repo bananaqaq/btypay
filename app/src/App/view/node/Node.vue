@@ -8,7 +8,7 @@
       <p>节点设置</p>
       <p></p>
     </section>
-    <ul>
+    <!-- <ul>
       <li>
         <p>主链节点设置</p>
         <div class="main">
@@ -115,7 +115,7 @@
         <el-button @click="paraDialog = false">取消</el-button>
         <el-button type="primary" @click="paraSubmit('ruleForm')">确认</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -133,14 +133,13 @@ export default {
   components: { HomeHeader },
   computed: {
     ...mapState([
-      "accountMap",
       "currentAccount",
+      "mainNodeList",
       "mainNode",
+      "paraNodeList",
       "paraNode",
       "mainAsset",
       "parallelAsset",
-      "mainNode",
-      "parallelNode",
       "mainIsConnected",
       "parallelIsConnected"
     ])
@@ -151,10 +150,10 @@ export default {
       paraDialog: false,
       mainData: "",
       mainIsInput: false,
-      mainNodeList: [],
-      paraNodeList: [],
-      currentMainNode: "",
-      currentParaNode: "",
+      // mainNodeList: [],
+      // paraNodeList: [],
+      // currentMainNode: "",
+      // currentParaNode: "",
       form: {
         name: "",
         coin: "",
@@ -191,236 +190,244 @@ export default {
 
 
 
-    inputHandle(e, node) {
-      // console.log(e)
-      // console.log(node)
-      if (node == "main") {
-        this.getAndSet("mainData", e.target.value);
-      } else if (node == "para") {
-        this.getAndSet("form", this.form);
-      }
-    },
-    test() {
-      this.mainDialog = true;
-      this.mainIsInput = false;
-      this.mainData = "";
-      this.getAndSet("mainDialog", true);
-    },
-    paraSubmit(formName) {
-      for (let i = 0; i < this.paraNodeList.length; i++) {
-        if (this.paraNodeList[i].url == this.form.url) {
-          this.$message.error("该节点地址已存在");
-          return;
-        }
-      }
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          // console.log("submit!");
-          let length = this.paraNodeList.length;
-          let index = this.paraNodeList[length - 1].index + 1;
-          // console.log(index);
-          let paraAddr = "";
-          let tradeAddr = "";
-          const p1 = this.convertExecToAddr(
-            "paracross",
-            this.paraNode.url
-          );
-          const p2 = this.convertExecToAddr(
-            "user.p." + this.form.name + ".trade",
-            this.paraNode.url
-          );
-          Promise.all([p1, p2])
-            .then(([paraAddr, tradeAddr]) => {
-              // console.log(paraAddr)
-              // console.log(tradeAddr)
-              paraAddr = paraAddr;
-              tradeAddr = tradeAddr;
-              let obj = {
-                ...this.form,
-                txHeight: -1,
-                txIndex: 0,
-                index,
-                paraAddr,
-                tradeAddr
-              };
-              // this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
-              //   let obj = JSON.parse(JSON.stringify(this.form));
-              let arr = this.paraNodeList.concat([obj]);
-              this.$store.commit("Account/UPDATE_PARALLEL_NODE", arr);
-              setChromeStorage("parallelNodeList", arr)
-                .then(res => {
-                  if (res == "success") {
-                    // this.paraNodeList = this.mainNode;
-                    this.$message.success("平行链节点添加成功");
-                    this.getParaNode(); //更新视图
-                  }
-                })
-                .catch(err => {
-                  console.log(err);
-                });
-              this.paraDialog = false;
-            })
-            .catch(err => {
-              this.$message.error("添加失败");
-            });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    mainSubmit() {
-      if (this.mainData == "" && this.mainDialog) {
-        this.mainIsInput = true;
-        return;
-      }
-      for (let i = 0; i < this.mainNodeList.length; i++) {
-        if (this.mainNodeList[i].url == this.mainData) {
-          this.$message.error("该节点地址已存在");
-          return;
-        }
-      }
-      let length = this.mainNodeList.length;
-      let index = this.mainNodeList[length - 1].index + 1;
-      let obj = {
-        url: this.mainData,
-        txHeight: -1,
-        txIndex: 0,
-        name: "BTY",
-        index
-      };
-      //   this.$store.commit("Account/UPDATE_MAIN_NODE", obj);
+    // inputHandle(e, node) {
+    //   // console.log(e)
+    //   // console.log(node)
+    //   if (node == "main") {
+    //     this.getAndSet("mainData", e.target.value);
+    //   } else if (node == "para") {
+    //     this.getAndSet("form", this.form);
+    //   }
+    // },
+    // test() {
+    //   this.mainDialog = true;
+    //   this.mainIsInput = false;
+    //   this.mainData = "";
+    //   this.getAndSet("mainDialog", true);
+    // },
+    // paraSubmit(formName) {
+    //   for (let i = 0; i < this.paraNodeList.length; i++) {
+    //     if (this.paraNodeList[i].url == this.form.url) {
+    //       this.$message.error("该节点地址已存在");
+    //       return;
+    //     }
+    //   }
+    //   this.$refs[formName].validate(valid => {
+    //     if (valid) {
+    //       // console.log("submit!");
+    //       let length = this.paraNodeList.length;
+    //       let index = this.paraNodeList[length - 1].index + 1;
+    //       // console.log(index);
+    //       let paraAddr = "";
+    //       let tradeAddr = "";
+    //       const p1 = this.convertExecToAddr(
+    //         "paracross",
+    //         this.paraNode.url
+    //       );
+    //       const p2 = this.convertExecToAddr(
+    //         "user.p." + this.form.name + ".trade",
+    //         this.paraNode.url
+    //       );
+    //       Promise.all([p1, p2])
+    //         .then(([paraAddr, tradeAddr]) => {
+    //           // console.log(paraAddr)
+    //           // console.log(tradeAddr)
+    //           paraAddr = paraAddr;
+    //           tradeAddr = tradeAddr;
+    //           let obj = {
+    //             ...this.form,
+    //             txHeight: -1,
+    //             txIndex: 0,
+    //             index,
+    //             paraAddr,
+    //             tradeAddr
+    //           };
+    //           // this.$store.commit("Account/UPDATE_PARALLEL_NODE", obj);
+    //           //   let obj = JSON.parse(JSON.stringify(this.form));
+    //           let arr = this.paraNodeList.concat([obj]);
+    //           this.$store.commit("Account/UPDATE_PARALLEL_NODE", arr);
+    //           setChromeStorage("parallelNodeList", arr)
+    //             .then(res => {
+    //               if (res == "success") {
+    //                 // this.paraNodeList = this.mainNode;
+    //                 this.$message.success("平行链节点添加成功");
+    //                 this.getParaNode(); //更新视图
+    //               }
+    //             })
+    //             .catch(err => {
+    //               console.log(err);
+    //             });
+    //           this.paraDialog = false;
+    //         })
+    //         .catch(err => {
+    //           this.$message.error("添加失败");
+    //         });
+    //     } else {
+    //       console.log("error submit!!");
+    //       return false;
+    //     }
+    //   });
+    // },
+    // mainSubmit() {
+    //   if (this.mainData == "" && this.mainDialog) {
+    //     this.mainIsInput = true;
+    //     return;
+    //   }
+    //   for (let i = 0; i < this.mainNodeList.length; i++) {
+    //     if (this.mainNodeList[i].url == this.mainData) {
+    //       this.$message.error("该节点地址已存在");
+    //       return;
+    //     }
+    //   }
+    //   let length = this.mainNodeList.length;
+    //   let index = this.mainNodeList[length - 1].index + 1;
+    //   let obj = {
+    //     url: this.mainData,
+    //     txHeight: -1,
+    //     txIndex: 0,
+    //     name: "BTY",
+    //     index
+    //   };
+    //   //   this.$store.commit("Account/UPDATE_MAIN_NODE", obj);
 
-      let arr = this.mainNodeList.concat([obj]);
-      this.$store.commit("Account/UPDATE_MAIN_NODE", arr);
-      // console.log("this.mainData");
-      // console.log(this.mainData);
-      setChromeStorage("mainNodeList", arr)
-        .then(res => {
-          if (res == "success") {
-            // this.mainNodeList = this.mainNode;
-            this.$message.success("主链节点添加成功");
-            this.getMainNode(); //更新视图
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-      this.mainDialog = false;
-      this.mainData = "";
-    },
-    setNode(val, target) {
-      // console.log('setNode')
-      if (target == "main") {
-        this.$store.commit("Account/UPDATE_CURRENT_MAIN", val);
-        this.$store.commit("Account/UPDATE_MAIN_CONNECT", 1);
-        setChromeStorage("mainNode", val)
-          .then(res => {
-            if (res == "success") {
-              this.$message.success("默认节点设置成功");
-              this.getMainNode(); //更新视图
-              this.refreshMainAsset().then(res => {});
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      } else if (target == "para") {
-        this.$store.commit("Account/UPDATE_CURRENT_PARALLEL", val);
-        this.$store.commit("Account/UPDATE_PARALLEL_CONNECT", 1);
-        setChromeStorage("paraNode", val)
-          .then(res => {
-            if (res == "success") {
-              this.$message.success("默认节点设置成功");
-              this.getParaNode(); //更新视图
-              this.refreshParallelAsset().then(res => {});
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      }
-    },
-    delNode(val, target) {
-      console.log(val);
-      console.log(target);
-      if (target == "main") {
-        for (let i = 0; i < this.mainNodeList.length; i++) {
-          if (val.url == this.mainNodeList[i].url) {
-            this.mainNodeList.splice(i, 1);
-            break;
-          }
-        }
-        setChromeStorage("mainNodeList", this.mainNodeList).then(res => {
-          if (res == "success") {
-            // this.mainNodeList = this.mainNode;
-            this.$message.success("主链节点删除成功");
-            this.getMainNode(); //更新视图
-          }
-        });
-      } else if (target == "para") {
-        for (let i = 0; i < this.paraNodeList.length; i++) {
-          if (val.url == this.paraNodeList[i].url) {
-            this.paraNodeList.splice(i, 1);
-            break;
-          }
-        }
-        setChromeStorage("parallelNodeList", this.paraNodeList).then(res => {
-          if (res == "success") {
-            // this.mainNodeList = this.mainNode;
-            this.$message.success("平行链节点删除成功");
-            this.getParaNode(); //更新视图
-          }
-        });
-      }
-    },
-    getMainNode() {
-      getChromeStorage("mainNodeList").then(res => {
-        // console.log(res);
-        if (res.mainNodeList) {
-          this.mainNodeList = res.mainNodeList;
-          this.$store.commit("Account/UPDATE_MAIN_NODE", res.mainNodeList);
-        }
-      });
-      getChromeStorage("mainNode").then(res => {
-        console.log(res);
-        if (res.mainNode) {
-          this.currentMainNode = res.mainNode;
-        }
-      });
-    },
-    getParaNode() {
-      getChromeStorage("parallelNodeList").then(res => {
-        // console.log(res)
-        if (res.parallelNodeList) {
-          this.paraNodeList = res.parallelNodeList;
-          this.$store.commit(
-            "Account/UPDATE_PARALLEL_NODE",
-            res.parallelNodeList
-          );
-        }
-      });
-      getChromeStorage("paraNode").then(res => {
-        console.log(res);
-        if (res.paraNode) {
-          this.currentParaNode = res.paraNode;
-        }
-      });
-    }
+    //   let arr = this.mainNodeList.concat([obj]);
+    //   this.$store.commit("Account/UPDATE_MAIN_NODE", arr);
+    //   // console.log("this.mainData");
+    //   // console.log(this.mainData);
+    //   setChromeStorage("mainNodeList", arr)
+    //     .then(res => {
+    //       if (res == "success") {
+    //         // this.mainNodeList = this.mainNode;
+    //         this.$message.success("主链节点添加成功");
+    //         this.getMainNode(); //更新视图
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    //   this.mainDialog = false;
+    //   this.mainData = "";
+    // },
+    // setNode(val, target) {
+    //   // console.log('setNode')
+    //   if (target == "main") {
+    //     this.$store.commit("Account/UPDATE_CURRENT_MAIN", val);
+    //     this.$store.commit("Account/UPDATE_MAIN_CONNECT", 1);
+    //     setChromeStorage("mainNode", val)
+    //       .then(res => {
+    //         if (res == "success") {
+    //           this.$message.success("默认节点设置成功");
+    //           this.getMainNode(); //更新视图
+    //           this.refreshMainAsset().then(res => {});
+    //         }
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       });
+    //   } else if (target == "para") {
+    //     this.$store.commit("Account/UPDATE_CURRENT_PARALLEL", val);
+    //     this.$store.commit("Account/UPDATE_PARALLEL_CONNECT", 1);
+    //     setChromeStorage("paraNode", val)
+    //       .then(res => {
+    //         if (res == "success") {
+    //           this.$message.success("默认节点设置成功");
+    //           this.getParaNode(); //更新视图
+    //           this.refreshParallelAsset().then(res => {});
+    //         }
+    //       })
+    //       .catch(err => {
+    //         console.log(err);
+    //       });
+    //   }
+    // },
+    // delNode(val, target) {
+    //   console.log(val);
+    //   console.log(target);
+    //   if (target == "main") {
+    //     for (let i = 0; i < this.mainNodeList.length; i++) {
+    //       if (val.url == this.mainNodeList[i].url) {
+    //         this.mainNodeList.splice(i, 1);
+    //         break;
+    //       }
+    //     }
+    //     setChromeStorage("mainNodeList", this.mainNodeList).then(res => {
+    //       if (res == "success") {
+    //         // this.mainNodeList = this.mainNode;
+    //         this.$message.success("主链节点删除成功");
+    //         this.getMainNode(); //更新视图
+    //       }
+    //     });
+    //   } else if (target == "para") {
+    //     for (let i = 0; i < this.paraNodeList.length; i++) {
+    //       if (val.url == this.paraNodeList[i].url) {
+    //         this.paraNodeList.splice(i, 1);
+    //         break;
+    //       }
+    //     }
+    //     setChromeStorage("parallelNodeList", this.paraNodeList).then(res => {
+    //       if (res == "success") {
+    //         // this.mainNodeList = this.mainNode;
+    //         this.$message.success("平行链节点删除成功");
+    //         this.getParaNode(); //更新视图
+    //       }
+    //     });
+    //   }
+    // },
+    // getMainNode() {
+    //   getChromeStorage("mainNodeList").then(res => {
+    //     // console.log(res);
+    //     if (res.mainNodeList) {
+    //       this.mainNodeList = res.mainNodeList;
+    //       this.$store.commit("Account/UPDATE_MAIN_NODE", res.mainNodeList);
+    //     }
+    //   });
+    //   getChromeStorage("mainNode").then(res => {
+    //     console.log(res);
+    //     if (res.mainNode) {
+    //       this.currentMainNode = res.mainNode;
+    //     }
+    //   });
+    // },
+    // getParaNode() {
+    //   getChromeStorage("parallelNodeList").then(res => {
+    //     // console.log(res)
+    //     if (res.parallelNodeList) {
+    //       this.paraNodeList = res.parallelNodeList;
+    //       this.$store.commit(
+    //         "Account/UPDATE_PARALLEL_NODE",
+    //         res.parallelNodeList
+    //       );
+    //     }
+    //   });
+    //   getChromeStorage("paraNode").then(res => {
+    //     console.log(res);
+    //     if (res.paraNode) {
+    //       this.currentParaNode = res.paraNode;
+    //     }
+    //   });
+    // }
   },
   mounted() {
-    this.mainNodeList = this.mainNode;
-    this.paraNodeList = this.parallelNode;
-    this.getMainNode();
-    this.getParaNode();
-    this.refreshMainAsset();
-    this.refreshParallelAsset();
+    // this.mainNodeList = this.mainNode;
+    // this.paraNodeList = this.parallelNode;
+    // this.getMainNode();
+    // this.getParaNode();
+    // this.refreshMainAsset();
+    // this.refreshParallelAsset();
     // this.convertExecToAddr(
     //   "user.p.gbttest.paracross",
     //   'http://114.55.11.139:1198'
     // ).then(res=>{
     //     console.log(res)
     // })
+    console.log(this.mainNodeList)
+    console.log(this.mainNode)
+    console.log(this.paraNodeList)
+    console.log(this.paraNode)
+    getChromeStorage(['mainNodeList', 'mainNode', 'paraNodeList', 'paraNode']).then(res => {
+      console.log('chrome', res)
+    })
+
   },
   watch: {
     paraDialog(val) {

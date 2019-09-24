@@ -8,11 +8,22 @@
 // import MyHeader from './Header'
 import {eventBus} from '@/libs/eventBus'
 import {getChromeStorage, setChromeStorage, clearChromeStorage} from '@/libs/chromeUtil.js'
+import { mapMutations, mapActions } from 'vuex'
 export default {
   // components: {MyHeader},
   methods: {
+    ...mapActions({
+      firstInitMainNode: "Account/FIRST_INIT_MAIN_NODE",
+      firstInitParaNode: "Account/FIRST_INIT_PARA_NODE"
+    }),
+    ...mapMutations({ 
+      updateMainNodeList: "Account/UPDATE_MAIN_NODE_LIST",
+      updateMainNode: "Account/UPDATE_MAIN_NODE",
+      updateParaNodeList: "Account/UPDATE_PARA_NODE_LIST",
+      updateParaNode: "Account/UPDATE_PARA_NODE",
+    }),
     initDataFromChromeStorage(){
-      
+
       let keys = ['mainNodeList', 'paraNodeList', 'mainNode', 'paraNode']
       getChromeStorage(keys).then(data => {
         let mList = data.mainNodeList
@@ -21,23 +32,23 @@ export default {
         let pNode = data.paraNode
 
         if(mList && mList.length !== 0){
-
+          this.updateMainNodeList(mList)
         } else {
-          this.$store.commit("Account/INIT_MAIN_NODE", mList)
+          this.firstInitMainNode()
         }
 
         if(pList && pList.length !== 0){
-          
+          this.updateParaNodeList(pList)
         } else {
-
+          this.firstInitParaNode()
         }
 
         if(mNode){
-
+          this.updateMainNode(mNode)
         }
 
         if(pNode){
-
+          this.updateParaNode(pNode)
         }
 
       })
@@ -52,7 +63,7 @@ export default {
       this.$chain33Sdk.httpProvider.setUrl(val) 
       // eventBus.$emit('provider-changed')
     })
-    // clearChromeStorage()
+    clearChromeStorage()
 
     this.initDataFromChromeStorage()
 
