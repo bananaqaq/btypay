@@ -150,3 +150,19 @@ export function timeout(ms) {
 //   return userLang
 // }
 
+/**
+ * 正则校验是否为url
+ */
+export function testUrl(urlStr) {
+  var reg = /^((https|http|ftp|rtsp|mms):\/\/)(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?(([0-9]{1,3}.){3}[0-9]{1,3}|([0-9a-z_!~*'()-]+.)*([0-9a-z][0-9a-z-]{0,61})?[0-9a-z].[a-z]{2,6})(:[0-9]{1,4})?((\/?)|(\/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+\/?)$/
+  return reg.test(urlStr)
+}
+
+export function errPromise(errMsg){
+  if(errMsg === void 0){
+    errMsg = 'error'
+  }
+  return new Promise(resolve => {
+    resolve(errMsg)
+  })
+}

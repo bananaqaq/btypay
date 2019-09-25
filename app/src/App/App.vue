@@ -32,8 +32,10 @@ export default {
         let pNode = data.paraNode
 
         if(mList && mList.length !== 0){
+          console.log("1111")
           this.updateMainNodeList(mList)
         } else {
+          console.log("2222")
           this.firstInitMainNode()
         }
 
