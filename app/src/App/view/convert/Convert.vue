@@ -67,21 +67,21 @@ import walletAPI from "@/mixins/walletAPI.js";
 import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
 import Long from "long";
-const { mapState } = createNamespacedHelpers("Account");
+const accountHelpers = createNamespacedHelpers("Account");
+const nodeHelpers = createNamespacedHelpers("Node")
 
 export default {
   mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
   computed: {
-    ...mapState([
-      //   "accountMap",
+    ...accountHelpers.mapState([
       "currentAccount",
+      "mainAsset",
+      "paraAsset"
+    ]),
+    ...nodeHelpers.mapState([
       "mainNode",
       "paraNode",
-      "mainAsset",
-      "parallelAsset"
-      //   "mainNode",
-      //   "parallelNode"
     ]),
     percentFee(val) {
       // let value = parseFloat(val)
@@ -272,7 +272,7 @@ export default {
     exchangeHandle() {
       if (this.convert == "B2G") {
         this.convert = "G2B";
-        this.asset = this.parallelAsset;
+        this.asset = this.paraAsset;
       } else {
         this.convert = "B2G";
         this.asset = this.mainAsset;
@@ -304,12 +304,11 @@ export default {
   },
   mounted() {
     this.refreshMainAsset();
-    this.refreshParallelAsset();
+    this.refreshParaAsset();
     setTimeout(() => {
       this.asset = this.mainAsset;
     }, 0);
     this.requestTradeOrder();
-    console.log("xxx")
   }
 };
 </script>

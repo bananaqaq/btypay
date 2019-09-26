@@ -155,7 +155,7 @@ export default {
     this.coin = this.$store.state.Records.assetType;
     this.form.address = this.$route.query.address || '';
     this.refreshMainAsset();
-    this.refreshParallelAsset();
+    this.refreshParaAsset();
     // if (this.currentAccount) {
     //   this.getBalance(this.currentAccount.address)
     // }

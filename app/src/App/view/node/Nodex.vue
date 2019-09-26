@@ -333,7 +333,7 @@ export default {
             if (res == "success") {
               this.$message.success("默认节点设置成功");
               this.getParaNode(); //更新视图
-              this.refreshParallelAsset().then(res => {});
+              this.refreshParaAsset().then(res => {});
             }
           })
           .catch(err => {
@@ -414,7 +414,7 @@ export default {
     this.getMainNode();
     this.getParaNode();
     this.refreshMainAsset();
-    this.refreshParallelAsset();
+    this.refreshParaAsset();
     // this.convertExecToAddr(
     //   "user.p.gbttest.paracross",
     //   'http://114.55.11.139:1198'

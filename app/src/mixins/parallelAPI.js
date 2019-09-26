@@ -3,12 +3,14 @@ import { createNamespacedHelpers } from 'vuex'
 import { signRawTx, signGroupTx } from '@/libs/sign.js'
 import Long from 'long'
 
-const { mapState } = createNamespacedHelpers('Account')
+const accountHelpers = createNamespacedHelpers('Account')
+const nodeHelpers = createNamespacedHelpers('Node')
 
 export default {
     mixins: [chain33API],
     computed: {
-        ...mapState(['accountMap', 'currentAccount', 'mainNode', 'paraNode']),
+        ...accountHelpers.mapState(['accountMap', 'currentAccount']),
+        ...nodeHelpers.mapState(['mainNode', 'paraNode']),
         paraAddr() {
             return this.paraNode.paraAddr
         },
@@ -217,7 +219,7 @@ export default {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                 return
             }
-            if( !this.BUY_ID || this.BUY_ID === ''){
+            if (!this.BUY_ID || this.BUY_ID === '') {
                 callback(JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER))
             }
             // 跨链兑换
@@ -414,7 +416,7 @@ export default {
                 callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
                 return
             }
-            if ( !this.SELL_ID || this.SELL_ID == '' ){
+            if (!this.SELL_ID || this.SELL_ID == '') {
                 callback(JSON.stringify(this.PARA_ERROR.TRADE_SELL_NO_ORDER))
                 return
             }
@@ -499,6 +501,6 @@ export default {
 
     },
     mounted() {
-        
+
     }
 }

@@ -27,8 +27,8 @@
           <div class="right">
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
-            <p v-if="!numIsAnimation">{{ parallelAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ parallelAsset.amt * parallelAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">{{ paraAsset.amt | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈￥{{ paraAsset.amt * paraAsset.price | numFilter(4)}}</p>
           </div>
         </li>
       </ul>
@@ -47,7 +47,8 @@ import chain33API from "@/mixins/chain33API.js";
 import { eventBus } from "@/libs/eventBus";
 import { setChromeStorage } from "@/libs/chromeUtil.js";
 
-const { mapState } = createNamespacedHelpers("Account");
+const accountHelpers = createNamespacedHelpers("Account");
+const nodeHelpers = createNamespacedHelpers("Node");
 
 export default {
   mixins: [walletAPI, chain33API],
@@ -59,25 +60,22 @@ export default {
         top: 0
       },
       menuIsShow: false,
-      numIsAnimation:true,
+      numIsAnimation: true
     };
   },
   computed: {
-    ...mapState([
+    ...accountHelpers.mapState([
       "accountMap",
       "currentAccount",
-      "mainNode",
-      "paraNode",
       "mainAsset",
-      "parallelAsset"
-    ])
+      "paraAsset"
+    ]),
+    ...nodeHelpers.mapState(["mainNode", "paraNode"])
   },
   methods: {
     toBty() {
       this.$store.commit("Records/ASSET_TYPE", "bty");
-      setChromeStorage('currentPageCoin','bty').then(res=>{
-
-      })
+      setChromeStorage("currentPageCoin", "bty").then(res => {});
       // if(this.mainNode && this.mainNode.url){
       //   console.log(this.mainNode)
       //   eventBus.$emit('node-change', this.mainNode.url)
@@ -86,9 +84,7 @@ export default {
     },
     toGame() {
       this.$store.commit("Records/ASSET_TYPE", "game");
-      setChromeStorage('currentPageCoin','game').then(res=>{
-        
-      })
+      setChromeStorage("currentPageCoin", "game").then(res => {});
       // if(this.paraNode && this.paraNode.url){
       //   console.log(this.paraNode)
       //   eventBus.$emit('node-change', this.paraNode.url)
@@ -100,9 +96,9 @@ export default {
     },
     numFilter(val) {
       if (val || val == 0) {
-        let f = parseFloat(val)
+        let f = parseFloat(val);
         let result = Math.floor(f * 10000) / 10000;
-        return parseFloat(result).toFixed(4)
+        return parseFloat(result).toFixed(4);
       }
     },
     init() {
@@ -121,7 +117,7 @@ export default {
     },
     NumAutoPlusAnimation(ele, options = {}) {
       let time = options.time, //总时间--毫秒为单位
-        finalNum = options.num , //要显示的真实数值
+        finalNum = options.num, //要显示的真实数值
         regulator = options.regulator || 100, //调速器，改变regulator的数值可以调节数字改变的速度
         step = finalNum / (time / regulator) /*每30ms增加的数值--*/,
         count = 0.0, //计数器
@@ -140,10 +136,10 @@ export default {
         if (t == initial) return;
 
         initial = t;
-        if(ele.indexOf('Price') > -1){
-          document.querySelector('#'+ele).innerHTML = '≈￥'+initial;
-        }else{
-          document.querySelector('#'+ele).innerHTML = initial;
+        if (ele.indexOf("Price") > -1) {
+          document.querySelector("#" + ele).innerHTML = "≈￥" + initial;
+        } else {
+          document.querySelector("#" + ele).innerHTML = initial;
         }
       }, 30);
     }
@@ -152,67 +148,59 @@ export default {
     this.init();
     // this.recoverAccount();
     setTimeout(() => {
-      this.refreshMainAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('bty',{
+      this.refreshMainAsset().then(res => {
+        if (res == "success") {
+          if (this.numIsAnimation) {
+            this.NumAutoPlusAnimation("bty", {
               time: 1500,
               num: this.numFilter(this.mainAsset.amt),
               regulator: 50
-            })
-            this.NumAutoPlusAnimation('btyPrice',{
+            });
+            this.NumAutoPlusAnimation("btyPrice", {
               time: 1500,
-              num: this.numFilter(this.mainAsset.amt*10),
+              num: this.numFilter(this.mainAsset.amt * 10),
               regulator: 50
-            })
+            });
           }
         }
-      })
-      this.refreshParallelAsset().then(res=>{
-        if(res == 'success'){
-          if(this.numIsAnimation){
-            this.NumAutoPlusAnimation('game',{
+      });
+      this.refreshParaAsset().then(res => {
+        if (res == "success") {
+          if (this.numIsAnimation) {
+            this.NumAutoPlusAnimation("game", {
               time: 1500,
-              num: this.numFilter(this.parallelAsset.amt),
+              num: this.numFilter(this.paraAsset.amt),
               regulator: 50
-            })
-            this.NumAutoPlusAnimation('gamePrice',{
+            });
+            this.NumAutoPlusAnimation("gamePrice", {
               time: 1500,
-              num: this.numFilter(this.parallelAsset.amt*10),
+              num: this.numFilter(this.paraAsset.amt * 10),
               regulator: 50
-            })
+            });
           }
         }
       });
     }, 10);
     this.$store.commit("Records/LOADING_RECORDS", []); //清空记录
-    setChromeStorage('element',{}).then(res=>{
-        // console.log(res)
-    })
-    setChromeStorage('beforePath',{}).then(res=>{
+    setChromeStorage("element", {}).then(res => {
       // console.log(res)
-    })
-    // let tx = '0a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a82050ad0020a15757365722e702e67616d65546573742e636f696e73124f180a2a4b1080c2d72f2220757365722e702e757365722e702e676274746573742e2e7761736d2e646963652a223147556862657953534e797751634763736a685050584d583769525a3650366f76621a6e08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a473045022100cede87ff1cc13591dbb747206dff068b386c016acfc177f5149afc2c3238d2c402200c2524d0d5b95264e3796f860c5368775ded8a99d57653fee963d95e985bd15a20c09a0c30bf92c4bc96ee89a6683a22313831447942764c36417135744c51516d7279695835623276467947544d4536504240024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c60aac020a17757365722e702e67616d65546573742e6c6f747465727912505002124c0a42307831663261333331343930623261313464353966313933346138373461393338303363613761306235643864626435353664303036316333366263623736363665100118db930420051a6d08011221022e573b4ea5edfacc6c910cfb08f70d4aec7b418bed966590c8f240650f79923e1a46304402204843c9d287240a6bb28507c7e35b82c0a7eb2b934e4c44631eca56373481cd3d02201da03281812ecff8701c8afc8eb96aa3165df8359cfa24b5ef8d0bc99368d5e230fedf92afb4c1b5eb7e3a22314442756359366d57486d6e706251574c503177546142315676705536423373434a40024a203fbe4fca37b584ff8bdf5aba3dc3f606dd69eaecf939c3829b472d3a2c2b27dd5220167862ab535edd15435c7bca8d7e09ab4e77d544f6737d97c3d72e61670803c6'
-    // this.sendTransaction(tx,'https://jiedian1.bityuan.com:8801/').then(res=>{
-    //   console.log('()()()()()()()()()(')
-    //   console.log(res)
-    // }).catch(err=>{
-    //   console.log('()()()()()()()()()')
-    //   console.log(err)
-    //   console.log(JSON.stringify(err))
-    //   console.log(JSON.parse(err))
-    //   console.log(err.id)
-    // })
+    });
+    setChromeStorage("beforePath", {}).then(res => {
+      // console.log(res)
+    });
   },
-  beforeRouteEnter(to, from, next){
-    next(vm=>{
-        // console.log(from)
-        if(from.name == 'login' || from.name == 'ImportWallet' || from.name == 'WordsConfirm'){
-          vm.numIsAnimation = true;
-        }else{
-          vm.numIsAnimation = false
-        }
-    })
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      if (
+        from.name == "login" ||
+        from.name == "ImportWallet" ||
+        from.name == "WordsConfirm"
+      ) {
+        vm.numIsAnimation = true;
+      } else {
+        vm.numIsAnimation = false;
+      }
+    });
   }
 };
 </script>

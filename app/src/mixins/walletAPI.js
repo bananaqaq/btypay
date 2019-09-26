@@ -1,11 +1,14 @@
 import chain33API from '@/mixins/chain33API'
+import Long from 'long'
 import { seed, sign } from '@33cn/wallet-base'
 import { createNamespacedHelpers } from "vuex";
 import { DBHelper } from "@/libs/dbHelper"
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount";
 import { getChromeStorage, setChromeStorage } from "@/libs/chromeUtil"
+import { CONNECT_STATE } from "@/dataTypes/GlobalEnum"
 
-const { mapState } = createNamespacedHelpers("Account");
+const accountHelpers = createNamespacedHelpers("Account");
+const nodeHelpers = createNamespacedHelpers("Node")
 
 let isDev = process.env.NODE_ENV === 'development'
 
@@ -38,13 +41,28 @@ function getBackgroundPage() {
 export default {
   mixins: [chain33API],
   computed: {
-    ...mapState([
+    ...accountHelpers.mapState([
       "currentAccount",
+    ]),
+    ...nodeHelpers.mapState([
       "mainNode",
       "paraNode",
     ])
   },
   methods: {
+    ...accountHelpers.mapMutations({
+      updateAccounts: "UPDATE_ACCOUNTS",
+      updateCurrentAccount: "UPDATE_CURRENT_ACCOUNT",
+      updateMainAsset: "UPDATE_MAIN_ASSET",
+      updateParaAsset: "UPDATE_PARA_ASSET"
+    }),
+    ...nodeHelpers.mapMutations({
+      updateMainConnect: "UPDATE_MAIN_CONNECT",
+      updateParaConnect: "UPDATE_PARA_CONNECT"
+    }),
+
+
+
     /* 账户相关 -- start */
     newMnemonic(lang) {
       if (lang === 1) {
@@ -54,34 +72,25 @@ export default {
       }
     },
     createHDWallet(mnemonic) {
-      // console.log(isDev)
       const wallet = seed.newWalletFromMnemonic(mnemonic)
-      // console.log(wallet)
       // 保存登录时间
       setChromeStorage('loginTime', (new Date()).valueOf()).then(res => {
-        // console.log(res)
       })
       if (isDev) {
         window.myChain33WalletInstance = wallet
       } else {
         getBackgroundPage().then(win => {
           win.myChain33WalletInstance = wallet
-          // console.log('createHDWallet')
-          // console.log(win)
         })
       }
       return wallet
     },
     getWallet() {
       return new Promise((resolve) => {
-        // console.log('getWallet')
-        // console.log(isDev)
         if (isDev) {
           resolve(window.myChain33WalletInstance)
         } else {
           getBackgroundPage().then(win => {
-            // console.log(win)
-            // console.log(win.myChain33WalletInstance)
             resolve(win.myChain33WalletInstance)
           })
         }
@@ -89,11 +98,8 @@ export default {
     },
     newAccount(name) {
       return this.getWallet().then(wallet => {
-        // console.log('newAccount')
-        // console.log(wallet)
         const account = wallet.newAccount(name)//生成公私钥地址等
-        this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
-        // this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)//待删
+        this.updateAccounts(wallet.accountMap)
         this.setCurrentAccount(account)
         setChromeStorage('accountIndexList', wallet.accountIndexList)
       })
@@ -101,18 +107,13 @@ export default {
 
     recoverAccount() {
       this.getWallet().then(wallet => {
-        console.log('获取索引恢复账户')
-        console.log(wallet)
         //  获取索引恢复账户
         window.chrome.storage.local.get(['accountIndexList'], (result) => {
-          // console.log(result)
           if (result.accountIndexList) {
-            if(wallet.recoverAccount){
+            if (wallet.recoverAccount) {
               wallet.recoverAccount(result.accountIndexList)
             }
-            // console.log('wallet.accountMap')
-            // console.log(wallet.accountMap)
-            this.$store.commit('Account/UPDATE_ACCOUNTS', wallet.accountMap)
+            this.updateAccounts(wallet.accountMap)
             getChromeStorage(['currentAccountIndex']).then(result => {
               let currentAccount = wallet.accountMap[result['currentAccountIndex']]
               if (!currentAccount) {
@@ -129,20 +130,15 @@ export default {
     setCurrentAccount(account) {
       return getBackgroundPage().then(win => {
         win.currentAccount = account
-        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', account)
+        this.updateCurrentAccount(account)
         return account
       }).then(account => {
         setChromeStorage('currentAccountIndex', account.index)
       })
     },
     getCurrentAccount() {
-      // console.log('getCurrentAccount')
       return getBackgroundPage().then(win => {
-        // console.log('win')
-        // console.log(win)
-        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', win.currentAccount)
-        // this.refreshMainAsset();
-        // this.refreshParallelAsset();
+        this.updateCurrentAccount(win.currentAccount)
         return win.currentAccount
       })
     },
@@ -150,7 +146,7 @@ export default {
       getBackgroundPage().then(win => {
         win.myChain33WalletInstance = null
         win.currentAccount = null
-        this.$store.commit('Account/UPDATE_CURRENTACCOUNT', null)
+        this.updateCurrentAccount(null)
         this.$router.push('login')
       })
     },
@@ -163,13 +159,10 @@ export default {
     },
 
     sendToAddr({ privateKey, to, amount, fee, note }, url) {
-      // console.log({ privateKey, to, amount, fee, note })
       return this.createRawTransaction({ to, amount, fee, note }, url)
         .then(tx => {
-          // console.log(tx)
           return sign.signRawTransaction(tx, privateKey)
         }).then(signedTx => {
-          // console.log(signedTx)
           return this.sendTransaction(signedTx, url)
         })
     },
@@ -179,55 +172,39 @@ export default {
 
     /* 资产相关 -- start */
     refreshMainAsset() {
-      // console.log(this.currentAccount)
       let addr = this.currentAccount.address
       let url = this.mainNode.url
-      return new Promise((resolve, reject) => {
-        this.getAddrBalance(addr, 'coins', url).then(res => {
-          let payload = { amt: res[0].balance / 1e8 }
-          this.$store.commit('Account/UPDATE_MAIN_ASSET', payload)
-          this.$store.commit('Account/UPDATE_MAIN_CONNECT', 2)
-          resolve('success')
-        }).catch(err => {
-          this.$store.commit('Account/UPDATE_MAIN_ASSET', {
-            amt: 0.0000,
-            price: 10
-          })
-          this.$store.commit('Account/UPDATE_MAIN_CONNECT', 3)
-          reject(err)
-          console.log(err)
-        })
+      return this.getAddrBalance(addr, 'coins', url).then(res => {
+        let payload = { amt: Long.fromString(res[0].balance) }
+        this.updateMainAsset(payload)
+        this.updateMainConnect(CONNECT_STATE.SUCCESS)
+        return 'success'
+      }).catch(err => {
+        this.updateMainConnect(CONNECT_STATE.FAIL)
+        return err.message
       })
     },
 
-    refreshParallelAsset() {
+    refreshParaAsset() {
       let addr = this.currentAccount.address
       let url = this.paraNode.url
-      return new Promise((resolve, reject) => {
-        this.getAddrBalance(addr, 'coins', url).then(res => {
-          let payload = { amt: res[0].balance / 1e8 }
-          this.$store.commit('Account/UPDATE_PARALLEL_ASSET', payload)
-          this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 2)
-          resolve('success')
+      return this.getAddrBalance(addr, 'coins', url).then(res => {
+          let payload = { amt: Long.fromString(res[0].balance) }
+          this.updateParaAsset(payload)
+          this.updateParaConnect(CONNECT_STATE.SUCCESS)
+          return 'success'
         }).catch(err => {
-          this.$store.commit('Account/UPDATE_PARALLEL_ASSET', {
-            name: "GBT",
-            amt: 0.0000,
-            price: 10
-          })
-          this.$store.commit('Account/UPDATE_PARALLEL_CONNECT', 3)
-          reject(err)
-          console.log(err)
+          this.updateParaConnect(CONNECT_STATE.FAIL)
+          return err.message
         })
-      })
     },
     /* 资产相关 -- end */
 
-    /* 交易记录相关 --start */
 
+    /* 交易记录相关 --start */
     initTxList(coin, callback) {
       let cNode = coin === "bty" ? this.mainNode : this.paraNode
-      let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let updateMethod = coin === "bty" ? "Node/UPDATE_AND_SAVE_MAIN_NODE" : "Node/UPDATE_AND_SAVE_PARA_NODE"
       let symbol = cNode.name
       let count = 100
 
@@ -263,7 +240,7 @@ export default {
     },
     getTxList(coin, typeTy, advanceNum, refresh, callback) {
       let cNode = coin === "bty" ? this.mainNode : this.paraNode
-      let updateMethod = coin === "bty" ? "Account/UPDATE_CURRENT_MAIN" : "Account/UPDATE_CURRENT_PARALLEL"
+      let updateMethod = coin === "bty" ? "Node/UPDATE_AND_SAVE_MAIN_NODE" : "Node/UPDATE_AND_SAVE_PARA_NODE"
       let symbol = cNode.name
       let keyName = typeTy === -1 ? TABLE_DATA.index[0].name : TABLE_DATA.index[1].name
       let keyData = typeTy === -1 ? symbol : [symbol, typeTy]
@@ -386,8 +363,8 @@ export default {
         return parseFloat(result).toFixed(num)
       }
     },
-    longFilter(val, num){
-      if(val || val== 0){
+    longFilter(val, num) {
+      if (val || val == 0) {
         let f = parseFloat(val)
         return (f / 1e8).toFixed(num)
       }

@@ -1,109 +1,67 @@
 <template>
   <div id="app">
-    <!-- <my-header></my-header> -->
-    <router-view/>
+    <router-view />
   </div>
 </template>
 <script>
-// import MyHeader from './Header'
-import {eventBus} from '@/libs/eventBus'
-import {getChromeStorage, setChromeStorage, clearChromeStorage} from '@/libs/chromeUtil.js'
-import { mapMutations, mapActions } from 'vuex'
+import {
+  getChromeStorage,
+  setChromeStorage,
+  clearChromeStorage
+} from "@/libs/chromeUtil.js";
+import { createNamespacedHelpers } from "vuex";
+
+const accountHelpers = createNamespacedHelpers("Account")
+const nodeHelpers = createNamespacedHelpers("Node")
+
 export default {
-  // components: {MyHeader},
   methods: {
-    ...mapActions({
-      firstInitMainNode: "Account/FIRST_INIT_MAIN_NODE",
-      firstInitParaNode: "Account/FIRST_INIT_PARA_NODE"
+    ...nodeHelpers.mapActions({
+      firstInitMainNode: "FIRST_INIT_MAIN_NODE",
+      firstInitParaNode: "FIRST_INIT_PARA_NODE"
     }),
-    ...mapMutations({ 
-      updateMainNodeList: "Account/UPDATE_MAIN_NODE_LIST",
-      updateMainNode: "Account/UPDATE_MAIN_NODE",
-      updateParaNodeList: "Account/UPDATE_PARA_NODE_LIST",
-      updateParaNode: "Account/UPDATE_PARA_NODE",
+    ...nodeHelpers.mapMutations({
+      updateMainNodeList: "UPDATE_MAIN_NODE_LIST",
+      updateMainNode: "UPDATE_MAIN_NODE",
+      updateParaNodeList: "UPDATE_PARA_NODE_LIST",
+      updateParaNode: "UPDATE_PARA_NODE"
     }),
-    initDataFromChromeStorage(){
-
-      let keys = ['mainNodeList', 'paraNodeList', 'mainNode', 'paraNode']
+    initDataFromChromeStorage() {
+      let keys = ["mainNodeList", "paraNodeList", "mainNode", "paraNode"];
       getChromeStorage(keys).then(data => {
-        let mList = data.mainNodeList
-        let pList = data.paraNodeList
-        let mNode = data.mainNode
-        let pNode = data.paraNode
+        let mList = data.mainNodeList;
+        let pList = data.paraNodeList;
+        let mNode = data.mainNode;
+        let pNode = data.paraNode;
 
-        if(mList && mList.length !== 0){
-          console.log("1111")
-          this.updateMainNodeList(mList)
+        if (mList && mList.length !== 0) {
+          this.updateMainNodeList(mList);
         } else {
-          console.log("2222")
-          this.firstInitMainNode()
+          this.firstInitMainNode();
         }
 
-        if(pList && pList.length !== 0){
-          this.updateParaNodeList(pList)
+        if (pList && pList.length !== 0) {
+          this.updateParaNodeList(pList);
         } else {
-          this.firstInitParaNode()
+          this.firstInitParaNode();
         }
 
-        if(mNode){
-          this.updateMainNode(mNode)
+        if (mNode) {
+          this.updateMainNode(mNode);
         }
 
-        if(pNode){
-          this.updateParaNode(pNode)
+        if (pNode) {
+          this.updateParaNode(pNode);
         }
-
-      })
-
-    }, 
-    initDataFromBackgroundRuntime(){
-
-    }
+      });
+    },
+    initDataFromBackgroundRuntime() {}
   },
   mounted() {
-    eventBus.$on('node-change', (val) => {
-      this.$chain33Sdk.httpProvider.setUrl(val) 
-      // eventBus.$emit('provider-changed')
-    })
-    clearChromeStorage()
-
-    this.initDataFromChromeStorage()
-
-    // getChromeStorage('mainNodeList').then(res=>{
-    //   if(res.mainNodeList && res.mainNodeList.length > 0){
-    //     // this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-    //     // chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-    //   }else{
-    //     chrome.storage.local.set({ 'mainNodeList': [{index: 0,url:'http://47.107.15.126:8801',txHeight: -1, txIndex: 0, name: "BTY" }] }, () => {})
-    //     // console.log(this.$store.state.Account.mainNode)
-    //   }
-    // })
-    // getChromeStorage('parallelNodeList').then(res=>{
-    //   if(res.parallelNodeList && res.parallelNodeList.length > 0){
-    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-    //   }else{
-    //     chrome.storage.local.set({ 'parallelNodeList': [{index: 0,name:'gbttest',coin:"GBT",url:"http://114.55.11.139:1198",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''}] }, () => {})
-    //     // chrome.storage.local.set({ 'parallelNodeList': [{index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''}] }, () => {})
-    //   }
-    // })
-    // getChromeStorage('mainNode').then(res=>{
-    //   if(res.mainNode){
-    //     this.$store.commit('Account/UPDATE_CURRENT_MAIN', res.mainNode)
-    //   }else{
-    //     chrome.storage.local.set({ 'mainNode': {url: 'http://47.107.15.126:8801',name: 'user.p.gbttest.',index: 0,txHeight: -1, txIndex: 0, name: "BTY"} }, () => {})
-    //   }
-    // })
-    // getChromeStorage('paraNode').then(res=>{
-    //   if(res.paraNode){
-    //     this.$store.commit('Account/UPDATE_CURRENT_PARALLEL', res.paraNode)
-    //     // chrome.storage.local.set({ 'paraNode': {index: 0, name: 'game', coin: "GBTY", url: "http://47.98.245.85:8901", txHeight: -1, txIndex: 0 ,paraAddr:'',tradeAddr:''} }, () => {})
-    //   }else{
-
-    //     chrome.storage.local.set({ 'paraNode': {url: 'http://114.55.11.139:1198',index: 0, name: 'user.p.gbttest.', coin: "GBT",txHeight: -1, txIndex: 0,paraAddr:'',tradeAddr:''} }, () => {})
-    //   }
-    // })
+    clearChromeStorage();
+    this.initDataFromChromeStorage();
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -119,25 +77,25 @@ body {
   height: 600px;
   min-height: 600x;
   // background: #dfe7f3;
-  background-image: url('../assets/images/indexBg.png');
+  background-image: url("../assets/images/indexBg.png");
   background-size: 100% 100%;
   box-sizing: border-box;
   /* 设置滚动条的样式 */
-      &::-webkit-scrollbar {
-        width: 0px;
-        height: 0px;
-        background: transparent;
-      }
-      // /* 滚动槽 */
-      // &::-webkit-scrollbar-track {
-      // //   border-radius: $--border-radius-base;
-      //   background: transparent;
-      // }
-      // /* 滚动条滑块 */
-      &::-webkit-scrollbar-thumb {
-        background: transparent;
-        border-radius: 0px;
-        opacity: 0.2;
-      }
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+  }
+  // /* 滚动槽 */
+  // &::-webkit-scrollbar-track {
+  // //   border-radius: $--border-radius-base;
+  //   background: transparent;
+  // }
+  // /* 滚动条滑块 */
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0px;
+    opacity: 0.2;
+  }
 }
 </style>

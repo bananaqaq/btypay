@@ -27,8 +27,8 @@
     <section class="balance" v-else>
       <img src="../../../assets/images/gameLogo.png" alt />
       <div class="balance">
-        <p>{{parallelAsset.amt| numFilter(4)}}</p>
-        <p>≈￥{{parallelAsset.amt * parallelAsset.price| numFilter(4)}}</p>
+        <p>{{paraAsset.amt| numFilter(4)}}</p>
+        <p>≈￥{{paraAsset.amt * paraAsset.price| numFilter(4)}}</p>
       </div>
       <div class="address">
         <p :style="addrIsShowAll?'':'text-overflow: ellipsis;'" ref="address">{{currentAccount.address}}</p>
@@ -85,7 +85,8 @@ import { createNamespacedHelpers } from "vuex";
 import { TransactionsListEntry, formatTxType } from "@/libs/bitcoinAmount.js";
 import { timeFormat } from "@/libs/common";
 
-const { mapState } = createNamespacedHelpers("Account");
+const accountHelpers = createNamespacedHelpers("Account");
+const nodeHelpers = createNamespacedHelpers("Node");
 
 export default {
   components: { All, Transfer, Receipt, Convert, HomeHeader },
@@ -110,13 +111,15 @@ export default {
     };
   },
   computed: {
-    ...mapState([
+    ...accountHelpers.mapState([
       "accountMap",
       "currentAccount",
+      "mainAsset",
+      "paraAsset"
+    ]),
+    ...nodeHelpers.mapState([
       "mainNode",
       "paraNode",
-      "mainAsset",
-      "parallelAsset"
     ]),
     currentTypeTy() {
       return this.castFlag2Typety(this.currentTab.val);
@@ -217,7 +220,7 @@ export default {
       }, 0);
     })
     this.refreshMainAsset();
-    this.refreshParallelAsset();
+    this.refreshParaAsset();
     this.coin = this.$route.query.coin;
     this.$refs["txListWrap"].addEventListener("scroll", this.onScroll);
     let url =
