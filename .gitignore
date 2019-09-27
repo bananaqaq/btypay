@@ -6,3 +6,5 @@
 *.njsproj
 *.sln
 *.sw*
+
+/BTY Wallet/node_modules

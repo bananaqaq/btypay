@@ -175,7 +175,7 @@ export default {
       let addr = this.currentAccount.address
       let url = this.mainNode.url
       return this.getAddrBalance(addr, 'coins', url).then(res => {
-        let payload = { amt: Long.fromString(res[0].balance) }
+        let payload = { amt: res[0].balance }
         this.updateMainAsset(payload)
         this.updateMainConnect(CONNECT_STATE.SUCCESS)
         return 'success'
@@ -189,14 +189,14 @@ export default {
       let addr = this.currentAccount.address
       let url = this.paraNode.url
       return this.getAddrBalance(addr, 'coins', url).then(res => {
-          let payload = { amt: Long.fromString(res[0].balance) }
-          this.updateParaAsset(payload)
-          this.updateParaConnect(CONNECT_STATE.SUCCESS)
-          return 'success'
-        }).catch(err => {
-          this.updateParaConnect(CONNECT_STATE.FAIL)
-          return err.message
-        })
+        let payload = { amt: res[0].balance }
+        this.updateParaAsset(payload)
+        this.updateParaConnect(CONNECT_STATE.SUCCESS)
+        return 'success'
+      }).catch(err => {
+        this.updateParaConnect(CONNECT_STATE.FAIL)
+        return err.message
+      })
     },
     /* 资产相关 -- end */
 
@@ -354,7 +354,7 @@ export default {
     numFilter(val, num) {
       if (val || val == 0) {
         let f = parseFloat(val),
-          result = null;
+        result = null
         if (num == 4) {
           result = Math.floor(f * 10000) / 10000;
         } else {

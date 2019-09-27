@@ -68,21 +68,14 @@ import parallelAPI from "@/mixins/parallelAPI.js";
 import { createNamespacedHelpers } from "vuex";
 import Long from "long";
 const accountHelpers = createNamespacedHelpers("Account");
-const nodeHelpers = createNamespacedHelpers("Node")
+const nodeHelpers = createNamespacedHelpers("Node");
 
 export default {
   mixins: [walletAPI, parallelAPI],
   components: { AssetBack },
   computed: {
-    ...accountHelpers.mapState([
-      "currentAccount",
-      "mainAsset",
-      "paraAsset"
-    ]),
-    ...nodeHelpers.mapState([
-      "mainNode",
-      "paraNode",
-    ]),
+    ...accountHelpers.mapState(["currentAccount", "mainAsset", "paraAsset"]),
+    ...nodeHelpers.mapState(["mainNode", "paraNode"]),
     percentFee(val) {
       // let value = parseFloat(val)
       // let str=Number(value*100).toFixed(1);
@@ -224,7 +217,7 @@ export default {
           showClose: false
         });
       } else {
-        let resObject = JSON.parse(res)
+        let resObject = JSON.parse(res);
         this.$alert(resObject.desc + " " + resObject.msg, "兑换失败", {
           confirmButtonText: "确认",
           closeOnClickModal: true,
@@ -285,7 +278,7 @@ export default {
       this.getTradeBuyOrder(this.paraNode.url).then(res => {
         setTimeout(() => {
           this.tradeBuyLoading = false;
-          if(res !== "success"){
+          if (res !== "success") {
             this.$message.error(JSON.parse(res).desc);
           }
         }, 600);
@@ -294,7 +287,7 @@ export default {
       this.getTradeSellOrder(this.paraNode.url).then(res => {
         setTimeout(() => {
           this.tradeSellLoading = false;
-          if(res !== "success"){
+          if (res !== "success") {
             this.$message.error(JSON.parse(res).desc);
           }
         }, 600);
@@ -308,7 +301,10 @@ export default {
     setTimeout(() => {
       this.asset = this.mainAsset;
     }, 0);
-    this.requestTradeOrder();
+
+    this.tradeBuyLoading = false;
+    this.tradeSellLoading = false;
+    // this.requestTradeOrder();
   }
 };
 </script>

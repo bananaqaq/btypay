@@ -1,6 +1,6 @@
 import chain33API from '@/mixins/chain33API'
 import { createNamespacedHelpers } from 'vuex'
-import { signRawTx, signGroupTx } from '@/libs/sign.js'
+import { signRawTx, signGroupTx, verifySignedTx, createNoneTx, getAddrFromSignedTx, getPayloadFromSignedTx } from '@/libs/sign.js'
 import Long from 'long'
 
 const accountHelpers = createNamespacedHelpers('Account')
@@ -207,57 +207,64 @@ export default {
         },
 
         transferBTY2GameCoin(privateKey, amt, callback) {
-            let to = this.currentAccount.address
-            let mainUrl = this.mainNode.url
-            let paraUrl = this.paraNode.url
+            // let to = this.currentAccount.address
+            // let mainUrl = this.mainNode.url
+            // let paraUrl = this.paraNode.url
 
-            if (privateKey === void 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (amt <= 0) {
-                callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
-                return
-            }
-            if (!this.BUY_ID || this.BUY_ID === '') {
-                callback(JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER))
-            }
-            // 跨链兑换
-            this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
-                this.txStateCheckTask(hash1, mainUrl, err1 => {
+            // if (privateKey === void 0) {
+            //     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+            //     return
+            // }
+            // if (amt <= 0) {
+            //     callback(JSON.stringify(this.PARA_ERROR.PARAM_ERROR))
+            //     return
+            // }
+            // if (!this.BUY_ID || this.BUY_ID === '') {
+            //     callback(JSON.stringify(this.PARA_ERROR.TRADE_BUY_NO_ORDER))
+            // }
+            // // 跨链兑换
+            // this.mainCoins2Paracross(privateKey, amt, mainUrl).then(hash1 => {
+            //     this.txStateCheckTask(hash1, mainUrl, err1 => {
 
-                    if (err1) {
-                        this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
-                        callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
-                        return
-                    }
+            //         if (err1) {
+            //             this.PARA_ERROR.B2G_COIN2PARA_ERROR.msg = err1
+            //             callback(JSON.stringify(this.PARA_ERROR.B2G_COIN2PARA_ERROR))
+            //             return
+            //         }
 
-                    this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
-                        this.txStateCheckTask(hash2, mainUrl, err2 => {
+            //         this.main2Parallel(privateKey, to, amt, mainUrl).then(hash2 => {
+            //             this.txStateCheckTask(hash2, mainUrl, err2 => {
 
-                            if (err2) {
-                                this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
-                                callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
-                                return
-                            }
+            //                 if (err2) {
+            //                     this.PARA_ERROR.B2G_PARA_ERROR.msg = err2
+            //                     callback(JSON.stringify(this.PARA_ERROR.B2G_PARA_ERROR))
+            //                     return
+            //                 }
 
-                            this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
-                                this.txStateCheckTask(hash3, paraUrl, err3 => {
+            //                 this.parallelPara2Coins(privateKey, amt, paraUrl).then(hash3 => {
+            //                     this.txStateCheckTask(hash3, paraUrl, err3 => {
 
-                                    if (err3) {
-                                        this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
-                                        callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
-                                        return
-                                    }
+            //                         if (err3) {
+            //                             this.PARA_ERROR.B2G_TRADE_ERROR.msg = err3
+            //                             callback(JSON.stringify(this.PARA_ERROR.B2G_TRADE_ERROR))
+            //                             return
+            //                         }
 
-                                    callback("success")
-                                })
+            //                         callback("success")
+            //                     })
 
-                            })
-                        })
-                    })
-                })
-            })
+            //                 })
+            //             })
+            //         })
+            //     })
+            // })
+
+            let str = "kjfdakljflkasjdfjsodifnsvna kjfdsioajfiwanf jdfakjsd;lkjf"
+            let tx = createNoneTx(Buffer.from(str))
+            let signedTx = signRawTx(tx, privateKey)
+            let payload = getPayloadFromSignedTx(signedTx)
+            console.log(payload)
+            console.log(verifySignedTx(signedTx))
 
             // this.parallel2Main(privateKey, to, amt, paraUrl).then(hash => {
             //     console.log(hash)

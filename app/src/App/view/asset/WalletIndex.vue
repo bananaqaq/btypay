@@ -15,8 +15,8 @@
           <div class="right">
             <p v-if="numIsAnimation" id="bty">0.0000</p>
             <p v-if="numIsAnimation" id="btyPrice">≈￥0.0000</p>
-            <p v-if="!numIsAnimation">{{ mainAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ mainAsset.amt * mainAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">{{ mainAsset.amt | longFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈￥{{ mainAsset.amt * mainAsset.price | longFilter(4)}}</p>
           </div>
         </li>
         <li @click="toGame" ref="game">
@@ -27,8 +27,8 @@
           <div class="right">
             <p v-if="numIsAnimation" id="game">0.0000</p>
             <p v-if="numIsAnimation" id="gamePrice">≈￥0.0000</p>
-            <p v-if="!numIsAnimation">{{ paraAsset.amt | numFilter(4)}}</p>
-            <p v-if="!numIsAnimation">≈￥{{ paraAsset.amt * paraAsset.price | numFilter(4)}}</p>
+            <p v-if="!numIsAnimation">{{ paraAsset.amt | longFilter(4)}}</p>
+            <p v-if="!numIsAnimation">≈￥{{ paraAsset.amt * paraAsset.price | longFilter(4)}}</p>
           </div>
         </li>
       </ul>

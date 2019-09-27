@@ -13,7 +13,7 @@
     "128": "icons/logo.png"
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["libs/xxxx.js", "background.js"]
   },
   "permissions": [
     "storage","tabs","notifications"

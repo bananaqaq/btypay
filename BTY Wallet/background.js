@@ -1,3 +1,10 @@
+// const Sign = require("./libs/sign")
+// const Long = require("bip66")
+
+// console.log("==============================", Long)
+
+printxx()
+
 chrome.runtime.onInstalled.addListener(()=>{
   chrome.notifications.create(null, {
     type: 'basic',

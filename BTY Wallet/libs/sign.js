@@ -8,6 +8,10 @@ const root = protobufjs.Root.fromJSON(transaction_json);
 const Transaction = root.lookupType('Transaction');
 const Transactions = root.lookupType('Transactions');
 
+export function printHello(){
+    console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+}
+
 export function signRawTx(tx, privateKey){
     let txData = protobufDecode(Transaction, fromHexString(tx))
     let signedTxData = signTxData(txData, privateKey)
@@ -55,15 +59,15 @@ function fromHexString(hexString) {
 
 function signTxData(txData, priKeyStr) {
     txData.signature = null;
-    let txBuffer = protobufEncode(Transaction, txData)
+    var data = Transaction.encode(txData).finish();
     // hash transaction
-    let hash = sha256js.sha256(txBuffer);
-    let keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));
+    var hash = sha256js.sha256(data);
+    var keypair = bitcoinjs.ECPair.fromPrivateKey(fromHexString(priKeyStr));
 
     // sign
-    let signature = keypair.sign(Buffer.from(fromHexString(hash)));
-    let r = signature.slice(0, 32);
-    let s = signature.slice(32, 64);
+    var signature = keypair.sign(Buffer.from(fromHexString(hash)));
+    var r = signature.slice(0, 32);
+    var s = signature.slice(32, 64);
     if (r[0] & 0x80) {
         r = Buffer.concat([Buffer.from([0]), r]);
     }
@@ -78,42 +82,4 @@ function signTxData(txData, priKeyStr) {
         signature: signature,
     };
     return txData
-}
-
-export function verifySignedTx(tx) {
-    let txData = protobufDecode(Transaction, fromHexString(tx))
-    let signature = Buffer.from(txData.signature.signature.slice(0))
-    let pubkey = Buffer.from(txData.signature.pubkey.slice(0))
-
-    txData.signature = null
-    let txBuffer = protobufEncode(Transaction, txData)
-    let hash = Buffer.from(fromHexString(sha256js.sha256(txBuffer)))
-    let keypair = bitcoinjs.ECPair.fromPublicKey(pubkey)
-
-    let {r, s} = bip66.decode(signature)
-    if(r.byteLength > 32){
-        r = r.slice(1, 33)
-    }
-    if(s.byteLength > 32){
-        s = s.slice(1, 33)
-    }
-
-    return keypair.verify(hash, Buffer.concat([r, s]))
-}
-
-export function createNoneTx(payload) {
-    let tx = Transaction.create({payload: payload})
-    return Buffer.from(protobufEncode(Transaction, tx)).toString('hex')
-}
-
-export function getAddrFromSignedTx(tx) {
-    let txData = protobufDecode(Transaction, fromHexString(tx))
-    let pubkey = txData.signature.pubkey
-    return bitcoinjs.ECPair.payments.p2pkh({pubkey}).address
-}
-
-export function getPayloadFromSignedTx(tx) {
-    let txBuffer = fromHexString(tx)
-    let txData = protobufDecode(Transaction, txBuffer)
-    return Buffer.from(txData.payload).toString()
 }
