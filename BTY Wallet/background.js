@@ -3,8 +3,6 @@
 
 // console.log("==============================", Long)
 
-printxx()
-
 chrome.runtime.onInstalled.addListener(()=>{
   chrome.notifications.create(null, {
     type: 'basic',
